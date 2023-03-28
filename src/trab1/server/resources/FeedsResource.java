@@ -8,6 +8,7 @@ import trab1.api.User;
 import trab1.api.rest.FeedsService;
 import trab1.api.rest.UsersService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +17,9 @@ import java.util.logging.Logger;
 @Singleton
 public class FeedsResource implements FeedsService {
 
-    private final Map<String,Map<Long, Message>> feeds = new HashMap<>();
+    private final Map<String, Map<Long, Message>> feeds = new HashMap<>();
+
+    private final Map <String, List<User>> subs = new HashMap<>();
 
     private static Logger Log = Logger.getLogger(UsersService.class.getName());
 
@@ -26,9 +29,9 @@ public class FeedsResource implements FeedsService {
         Log.info("postMessage : user = " + user + "; pwd = " + pwd + "; msg = " + msg);
 
         // Checks if message data is valid
-        if(msg == null || (Long)msg.getId() == null || msg.getUser() == null || msg.getDomain() == null || msg.getText() == null) {
+        if (msg == null || (Long) msg.getId() == null || msg.getUser() == null || msg.getDomain() == null || msg.getText() == null) {
             Log.info("Message object invalid.");
-            throw new WebApplicationException( Response.Status.BAD_REQUEST );
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
         // TODO Checks if user exists and pwd matches user's password
@@ -39,7 +42,7 @@ public class FeedsResource implements FeedsService {
 
         if (feed == null) {
             feed = new HashMap<>();
-            feeds.put(name,feed);
+            feeds.put(name, feed);
         }
 
         feed.put(msg.getId(), msg);
@@ -52,9 +55,9 @@ public class FeedsResource implements FeedsService {
         Log.info("removeFromPersonalFeed : user = " + user + "; pwd = " + pwd + "; mid = " + mid);
 
         // Checks if message ID is valid
-        if((Long)mid == null) {
+        if ((Long) mid == null) {
             Log.info("Message ID null.");
-            throw new WebApplicationException( Response.Status.BAD_REQUEST );
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
         // TODO Checks if user exists and pwd matches user's password
@@ -65,7 +68,7 @@ public class FeedsResource implements FeedsService {
         // Checks if the message exists
         if (feed == null || feed.containsKey(mid)) {
             Log.info("Message does not exist.");
-            throw new WebApplicationException( Response.Status.NOT_FOUND );
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
 
         feed.remove(mid);
@@ -77,20 +80,19 @@ public class FeedsResource implements FeedsService {
         Log.info("getMessage : user = " + user + "; mid = " + mid);
 
         // Check if message ID is valid
-        if((Long)mid == null) {
+        if ((Long) mid == null) {
             Log.info("Message ID null.");
-            throw new WebApplicationException( Response.Status.BAD_REQUEST );
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
         var name = user.split("@")[0];
         var feed = feeds.get(name);
 
         // Checks if message exists
-        if(feed == null || feed.get(mid) == null) {
+        if (feed == null || feed.get(mid) == null) {
             Log.info("Message does not exist.");
-            throw new WebApplicationException( Response.Status.NOT_FOUND );
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
-
 
 
         return feed.get(mid);
@@ -98,22 +100,48 @@ public class FeedsResource implements FeedsService {
 
     @Override
     public List<Message> getMessages(String user, long time) {
-        return null;
+        Log.info("getMessage : user = " + user + "; time = " + time);
+
+        if ((Long) time == null || user == null) {
+            Log.info("Time or user null.");
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
+
+        var name = user.split("@")[0];
+        var result = new ArrayList<Message>();
+
+        var l = (List<Message>) feeds.get(name).values();
+        var s = subs.get(name);
+        for ( User u:
+                s) {
+            l.addAll(feeds.get(u.getName()).values());
+        }
+        for (Message m : l) {
+            if (m.getCreationTime() >= time) ;
+            result.add(m);
+        }
+
+        return result;
     }
 
     @Override
     public void subUser(String user, String userSub, String pwd) {
+        var name = user.split("@")[0];
+
+        subs.get(name);
 
     }
 
     @Override
     public void unsubscribeUser(String user, String userSub, String pwd) {
-
+        var name = user.split("@")[0];
     }
 
     @Override
     public List<User> listSubs(String user) {
-        return null;
-    }
 
+        var name = user.split("@")[0];
+
+        return subs.get(name);
+    }
 }
