@@ -17,7 +17,7 @@ public class CreateUserClient {
 	public static void main(String[] args) throws IOException {
 				
 		if (args.length != 5) {
-			System.err.println("Use: java aula3.clients.CreateUserClient url name pwd domain displayName");
+			System.err.println("Use: java trab1.clients.CreateUserClient url name pwd domain displayName");
 			return;
 		}
 

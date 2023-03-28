@@ -8,7 +8,7 @@ public class DeleteUserClient {
     public static void main(String[] args) throws IOException {
 
         if( args.length != 3) {
-            System.err.println( "Use: java aula3.clients.DeleteUserClient url name pwd");
+            System.err.println( "Use: java trab1.clients.DeleteUserClient url name pwd");
             return;
         }
 

@@ -17,7 +17,7 @@ public class UpdateUserClient {
     public static void main(String[] args) throws IOException {
 
         if( args.length != 6) {
-            System.err.println( "Use: java aula3.clients.UpdateUserClient url name oldpwd pwd domain displayName");
+            System.err.println( "Use: java trab1.clients.UpdateUserClient url name oldpwd pwd domain displayName");
             return;
         }
 
