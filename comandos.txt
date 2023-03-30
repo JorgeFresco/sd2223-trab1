@@ -1,23 +1,11 @@
 mvn clean compile assembly:single docker:build
 
-// Server
-docker run -h users-1 --name users-1 --network sdnet -p 8080:8080 sd2223-trab1-60204-60209
+test-sd-tp1.bat -image sd2223-trab1-60204-60209
 
-// Cliente
-docker run -it --network sdnet sd2223-trab1-60204-60209 /bin/bash
+// Run do Server
+docker run --rm -h users-1 --name users-1 --network sdnet -p 8080:8080 sd2223-trab1-60204-60209
+// Run do Cliente
+docker run -it --network sdnet sd2223-trab1-60204-602099 /bin/bash
 
 // CreateUserClient
-java -cp sd2223.jar trab1.clients.CreateUserClient http://users-1:8080/rest nmp 12345 nova "Nuno Preguica"
-
-
-// Docker para o tester
-FROM nunopreguica/sd2223tpbase
-
-# working directory inside docker image
-WORKDIR /home/sd
-
-# copy the jar created by assembly to the docker image
-COPY target/*jar-with-dependencies.jar sd2223.jar
-
-# copy the file of properties to the docker image
-COPY feeds.props feeds.props
+java -cp trab1.jar trab1.clients.CreateUserClient http://users-1:8080/rest nmp 12345 nova "Nuno Preguica"

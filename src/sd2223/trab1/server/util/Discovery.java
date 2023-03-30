@@ -1,12 +1,6 @@
-package trab1;
+package sd2223.trab1.server.util;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.MulticastSocket;
-import java.net.NetworkInterface;
-import java.net.URI;
+import java.net.*;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,7 +52,7 @@ class DiscoveryImpl implements Discovery {
 	static final int DISCOVERY_ANNOUNCE_PERIOD = 1000;
 
 	// Replace with appropriate values...
-	static final InetSocketAddress DISCOVERY_ADDR = new InetSocketAddress("224.0.0.1", 9000);
+	static final InetSocketAddress DISCOVERY_ADDR = new InetSocketAddress("226.226.226.226", 2266);
 
 	// Used separate the two fields that make up a service announcement.
 	private static final String DELIMITER = "\t";

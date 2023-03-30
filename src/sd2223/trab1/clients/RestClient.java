@@ -1,4 +1,4 @@
-package trab1.clients;
+package sd2223.trab1.clients;
 
 import java.net.URI;
 import java.util.function.Supplier;
@@ -30,7 +30,7 @@ public class RestClient {
 
 		config.property(ClientProperties.READ_TIMEOUT, READ_TIMEOUT);
 		config.property( ClientProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
-		
+
 		this.client = ClientBuilder.newClient(config);
 	}
 

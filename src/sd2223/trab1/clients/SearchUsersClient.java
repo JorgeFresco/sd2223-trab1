@@ -1,4 +1,4 @@
-package trab1.clients;
+package sd2223.trab1.clients;
 
 import java.io.IOException;
 import java.net.URI;
@@ -13,7 +13,7 @@ public class SearchUsersClient {
 	public static void main(String[] args) throws IOException {
 		
 		if (args.length != 2) {
-			System.err.println("Use: java trab1.clients.SearchUsersClient url pattern");
+			System.err.println("Use: java sd2223.trab1.clients.SearchUsersClient url pattern");
 			return;
 		}
 

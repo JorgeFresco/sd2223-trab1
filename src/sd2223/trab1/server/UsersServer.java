@@ -1,4 +1,4 @@
-package trab1.server;
+package sd2223.trab1.server;
 
 import java.net.InetAddress;
 import java.net.URI;
@@ -7,7 +7,8 @@ import java.util.logging.Logger;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import trab1.server.resources.UsersResource;
+import sd2223.trab1.server.util.Discovery;
+import sd2223.trab1.server.resources.UsersResource;
 
 public class UsersServer {
 
@@ -31,6 +32,8 @@ public class UsersServer {
 			String ip = InetAddress.getLocalHost().getHostAddress();
 			String serverURI = String.format(SERVER_URI_FMT, ip, PORT);
 			JdkHttpServerFactory.createHttpServer(URI.create(serverURI), config);
+
+			// Discovery.getInstance().announce(ip, serverURI);
 
 			Log.info(String.format("%s Server ready @ %s\n", SERVICE, serverURI));
 

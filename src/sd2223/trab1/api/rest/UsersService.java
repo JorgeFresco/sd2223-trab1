@@ -1,8 +1,7 @@
-package trab1.api.rest;
+package sd2223.trab1.api.rest;
 
 import java.util.List;
 
-import trab1.api.User;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -13,6 +12,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import sd2223.trab1.api.User;
 
 @Path(UsersService.PATH)
 public interface UsersService {
@@ -42,6 +42,7 @@ public interface UsersService {
 	 *         existing password; 
 	 *         403 if the password is incorrect; 
 	 *         404 if no user exists with the provided userId
+	 * 		400 otherwise.
 	 */
 	@GET
 	@Path("/{" + NAME+ "}")
@@ -74,7 +75,7 @@ public interface UsersService {
 	 *         existing password 
 	 *         403 if the password is incorrect 
 	 *         404 if no user exists with the provided userId
-	 *         409 otherwise
+	 *         400 otherwise
 	 */
 	@DELETE
 	@Path("/{" + NAME+ "}")

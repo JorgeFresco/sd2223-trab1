@@ -1,12 +1,12 @@
-package trab1.server.resources;
+package sd2223.trab1.server.resources;
 
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
-import trab1.api.Message;
-import trab1.api.User;
-import trab1.api.rest.FeedsService;
-import trab1.api.rest.UsersService;
+import sd2223.trab1.api.Message;
+import sd2223.trab1.api.User;
+import sd2223.trab1.api.rest.FeedsService;
+import sd2223.trab1.api.rest.UsersService;
 
 import java.util.List;
 import java.util.HashMap;
@@ -112,7 +112,7 @@ public class FeedsResource implements FeedsService {
     }
 
     @Override
-    public List<User> listSubs(String user) {
+    public List<String> listSubs(String user) {
         return null;
     }
 

@@ -1,10 +1,10 @@
-package trab1.clients;
+package sd2223.trab1.clients;
+
+import sd2223.trab1.api.User;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.logging.Logger;
-
-import trab1.api.User;
 
 public class CreateUserClient {
 	
@@ -17,7 +17,7 @@ public class CreateUserClient {
 	public static void main(String[] args) throws IOException {
 				
 		if (args.length != 5) {
-			System.err.println("Use: java trab1.clients.CreateUserClient url name pwd domain displayName");
+			System.err.println("Use: java sd2223.trab1.clients.CreateUserClient url name pwd domain displayName");
 			return;
 		}
 

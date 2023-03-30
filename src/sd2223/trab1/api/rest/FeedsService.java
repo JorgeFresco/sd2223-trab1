@@ -1,11 +1,17 @@
-package trab1.api.rest;
-
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import trab1.api.Message;
-import trab1.api.User;
+package sd2223.trab1.api.rest;
 
 import java.util.List;
+
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+import sd2223.trab1.api.Message;
 
 @Path(FeedsService.PATH)
 public interface FeedsService {
@@ -91,7 +97,7 @@ public interface FeedsService {
 	 * @param user the user subscribing (following) other user (format user@domain)
 	 * @param userSub the user to be subscribed (followed) (format user@domain)
 	 * @param pwd password of the user to subscribe
-	 * @return	200 if ok
+	 * @return	204 if ok
 	 * 			404 is generated if the user to be subscribed does not exist
 	 * 			403 is generated if the user does not exist or if the pwd is not correct
 	 */
@@ -108,7 +114,7 @@ public interface FeedsService {
 	 * @param user the user unsubscribing (following) other user (format user@domain)
 	 * @param userSub the identifier of the user to be unsubscribed
 	 * @param pwd password of the user to subscribe
-	 * @return 	200 if ok
+	 * @return 	204 if ok
 	 * 			403 is generated if the user does not exist or if the pwd is not correct
 	 * 			404 is generated if the userSub is not subscribed
 	 */
@@ -129,5 +135,5 @@ public interface FeedsService {
 	@GET
 	@Path("/sub/list/{" + USER + "}")
 	@Produces(MediaType.APPLICATION_JSON)
-	List<User> listSubs(@PathParam(USER) String user);
+	List<String> listSubs(@PathParam(USER) String user);
 }
