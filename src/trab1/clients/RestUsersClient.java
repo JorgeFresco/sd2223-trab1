@@ -52,6 +52,13 @@ public class RestUsersClient extends RestClient implements UsersService {
 
 	private User clt_updateUser(String name, String pwd, User user) {
 
+
+		var olduser = clt_getUser(name,pwd);
+		if (user.getDomain().equals("null"))
+			user.setDomain(olduser.getDomain());
+		if (user.getDisplayName().equals("null"))
+			user.setDisplayName(olduser.getDisplayName());
+
 		Response r = target.path( name )
 				.queryParam(UsersService.PWD, pwd).request()
 				.accept(MediaType.APPLICATION_JSON)
@@ -68,6 +75,7 @@ public class RestUsersClient extends RestClient implements UsersService {
 	}
 
 	private User clt_deleteUser(String name, String pwd) {
+
 
 		Response r = target.path( name )
 				.queryParam(UsersService.PWD, pwd).request()

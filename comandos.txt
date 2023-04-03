@@ -9,6 +9,15 @@ docker run -it --network sdnet sd2223-trab1-60204-60209 /bin/bash
 // CreateUserClient
 java -cp sd2223.jar trab1.clients.CreateUserClient http://users-1:8080/rest nmp 12345 nova "Nuno Preguica"
 
+// UpdateUserClient
+java -cp sd2223.jar trab1.clients.CreateUserClient http://users-1:8080/rest nmp 12345  54321 null null
+
+// SearchUsersClient
+java -cp sd2223.jar trab1.clients.SearchUsersClient http://users-1:8080/rest nmp
+
+// DeleteUserClient
+java -cp sd2223.jar trab1.clients.DeleteUserClient http://users-1:8080/rest nmp 12345
+
 // PostMessageClient
 java -cp sd2223.jar trab1.clients.PostMessageClient http://users-1:8080/rest nmp 12345 1 message nova
 
