@@ -94,6 +94,16 @@ public class UsersResource implements UsersService {
 			throw new WebApplicationException( Response.Status.FORBIDDEN );
 		}
 
+		// Name and Domain cannot be changed
+		user.setName(u.getName());
+		user.setDomain(u.getDomain());
+
+		// Checks for null properties
+		if (user.getPwd() == null)
+			user.setPwd(u.getPwd());
+		if (user.getDisplayName() == null)
+			user.setDisplayName(u.getDisplayName());
+
 		users.put(name,user);
 
 		return user;

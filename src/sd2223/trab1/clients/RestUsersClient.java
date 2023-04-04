@@ -52,17 +52,6 @@ public class RestUsersClient extends RestClient implements UsersService {
 
 	private User clt_updateUser(String name, String pwd, User user) {
 
-		var olduser = clt_getUser(name,pwd);
-
-		if (user.getName().equals("null"))
-			user.setName(olduser.getName());
-		if (user.getPwd().equals("null"))
-			user.setPwd(olduser.getPwd());
-		if (user.getDisplayName().equals("null"))
-			user.setDisplayName(olduser.getDisplayName());
-		if (user.getDomain().equals("null"))
-			user.setDomain(olduser.getDomain());
-
 		Response r = target.path( name )
 				.queryParam(UsersService.PWD, pwd).request()
 				.accept(MediaType.APPLICATION_JSON)
