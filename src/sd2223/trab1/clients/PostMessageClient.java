@@ -1,6 +1,7 @@
 package sd2223.trab1.clients;
 
 import sd2223.trab1.api.Message;
+import sd2223.trab1.clients.rest.RestFeedsClient;
 
 import java.io.IOException;
 import java.net.URI;
@@ -24,10 +25,11 @@ public class PostMessageClient {
         String user = args[1];
         String pwd = args[2];
         String id = args[3];
-        String msg= args[4];
-        String domain= args[5];
+        String msg = args[4];
+        String domain = args[5];
 
-        Message m = new Message(Long.parseLong(id),user,domain,msg);
+        Message m = new Message(Long.parseLong(id), user, domain, msg);
+
         Log.info("Sending request to server.");
 
         var result = new RestFeedsClient(URI.create(serverUrl)).postMessage(user+"@"+domain, pwd, m);

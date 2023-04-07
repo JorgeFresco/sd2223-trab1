@@ -1,4 +1,4 @@
-package sd2223.trab1.server.util;
+package sd2223.trab1.servers.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

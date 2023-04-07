@@ -1,10 +1,10 @@
-package sd2223.trab1.server.util;
+package sd2223.trab1.servers.util;
 
 import java.net.*;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 /**
@@ -48,7 +48,7 @@ class DiscoveryImpl implements Discovery {
 
 	// The pre-agreed multicast endpoint assigned to perform discovery.
 
-	static final int DISCOVERY_RETRY_TIMEOUT = 5000;
+	static final int DISCOVERY_RETRY_TIMEOUT = 1000;
 	static final int DISCOVERY_ANNOUNCE_PERIOD = 1000;
 
 	// Replace with appropriate values...
@@ -61,7 +61,7 @@ class DiscoveryImpl implements Discovery {
 
 	private static Discovery singleton;
 
-	private Map<String, List<URI>> discoveries = new HashMap<>();
+	private Map<String, List<URI>> discoveries = new ConcurrentHashMap<>();
 
 	synchronized static Discovery getInstance() {
 		if (singleton == null) {
@@ -130,7 +130,6 @@ class DiscoveryImpl implements Discovery {
 
 						var parts = msg.split(DELIMITER);
 						if (parts.length == 2) {
-							// TODO: complete by storing the decoded announcements...
 							var serviceName = parts[0];
 							var uri = URI.create(parts[1]);
 

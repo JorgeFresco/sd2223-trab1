@@ -1,6 +1,7 @@
 package sd2223.trab1.clients;
 
 import sd2223.trab1.api.User;
+import sd2223.trab1.clients.rest.RestUsersClient;
 
 import java.io.IOException;
 import java.net.URI;
