@@ -12,17 +12,18 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import sd2223.trab1.api.Message;
+import sd2223.trab1.api.User;
 
 @Path(FeedsService.PATH)
 public interface FeedsService {
-
+	
 	String MID = "mid";
 	String PWD = "pwd";
 	String USER = "user";
 	String TIME = "time";
 	String DOMAIN = "domain";
 	String USERSUB = "userSub";
-
+	
 	String PATH = "/feeds";
 	/**
 	 * Posts a new message in the feed, associating it to the feed of the specific user.
@@ -48,7 +49,7 @@ public interface FeedsService {
 	 * Removes the message identified by mid from the feed of user.
 	 * A user must contact the server of her domain directly (i.e., this operation should not be
 	 * propagated to other domain)
-	 *
+	 * 
 	 * @param user user feed being accessed (format user@domain)
 	 * @param mid the identifier of the message to be deleted
 	 * @param pwd password of the user
@@ -62,7 +63,7 @@ public interface FeedsService {
 
 	/**
 	 * Obtains the message with id from the feed of user (may be a remote user)
-	 *
+	 * 
 	 * @param user user feed being accessed (format user@domain)
 	 * @param mid id of the message
 	 *
@@ -77,7 +78,7 @@ public interface FeedsService {
 	/**
 	 * Returns a list of all messages stored in the server for a given user newer than time
 	 * (note: may be a remote user)
-	 *
+	 * 
 	 * @param user user feed being accessed (format user@domain)
 	 * @param time the oldest time of the messages to be returned
 	 * @return	200 a list of messages, potentially empty;

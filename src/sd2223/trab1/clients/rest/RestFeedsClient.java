@@ -9,6 +9,7 @@ import sd2223.trab1.api.Message;
 import sd2223.trab1.api.java.Feeds;
 import sd2223.trab1.api.java.Result;
 import sd2223.trab1.api.rest.FeedsService;
+import sd2223.trab1.clients.UsersClientFactory;
 
 import java.net.URI;
 import java.util.List;
@@ -26,7 +27,7 @@ public class RestFeedsClient extends RestClient implements Feeds {
     }
 
     private Result<Long> clt_PostMessage( String user,String pwd, Message msg) {
-        Response r = target.path( user)
+        Response r = target.path(user)
                 .queryParam(FeedsService.PWD, pwd)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -36,27 +37,29 @@ public class RestFeedsClient extends RestClient implements Feeds {
     }
 
     private Result<Void> clt_removeFromPersonalFeed(String user, long mid, String pwd) {
-
-        var name = user.split("@")[0];
-        Response r = target.path( name)
-                    .queryParam(FeedsService.PWD, pwd).request()
-                    .get();
+        Response r = target.path(user)
+                .path(String.valueOf(mid))
+                .queryParam(FeedsService.PWD, pwd)
+                .request()
+                .delete();
 
         return super.toJavaResult(r, Void.class);
 
     }
     private Result<Message> clt_getMessage(String user, long mid) {
-        var name = user.split("@")[0];
-        Response r= target.path( name+"/"+mid)
+        Response r= target.path(user)
+                .path(String.valueOf(mid))
                 .request()
+                .accept(MediaType.APPLICATION_JSON)
                 .get();
 
         return super.toJavaResult(r, Message.class);
     }
 
     private Result<List<Message>> clt_getMessages(String user, long time) {
-        var name = user.split("@")[0];
-        Response r = target.path("/").queryParam(FeedsService.TIME, time).request()
+        Response r = target.path(user)
+                .queryParam(FeedsService.TIME, time)
+                .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get();
 
@@ -69,25 +72,28 @@ public class RestFeedsClient extends RestClient implements Feeds {
     }
 
     private Result<Void> clt_subUser(String user, String userSub, String pwd) {
-        var name = user.split("@")[0];
-        Response r = target.path( name)
-                .queryParam(FeedsService.PWD, pwd).request()
-                .get();
+        Response r = target.path("sub/"+ user)
+                .path(userSub)
+                .queryParam(FeedsService.PWD, pwd)
+                .request()
+                .post(Entity.json(null));
 
         return super.toJavaResult(r, Void.class);
     }
 
     private Result<Void> clt_unsubscribeUser(String user, String userSub, String pwd) {
-        var name = user.split("@")[0];
-        Response r = target.path( name)
-                .queryParam(FeedsService.PWD, pwd).request()
-                .get();
+        Response r = target.path("sub/"+user)
+                .path(userSub)
+                .queryParam(FeedsService.PWD, pwd)
+                .request()
+                .delete();
 
         return super.toJavaResult(r, Void.class);
     }
 
     private Result<List<String>> clt_listSubs(String user) {
-        Response r = target.path("/").request()
+        Response r = target.path("sub/list/"+user)
+                .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get();
 

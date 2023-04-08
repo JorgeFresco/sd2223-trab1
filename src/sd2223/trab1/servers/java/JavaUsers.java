@@ -14,43 +14,44 @@ import sd2223.trab1.api.java.Users;
 public class JavaUsers implements Users {
 	private final Map<String,User> users = new ConcurrentHashMap<>();
 
-	private static Logger Log = Logger.getLogger(JavaUsers.class.getName());
+	private static final Logger Log = Logger.getLogger(JavaUsers.class.getName());
 
 	@Override
 	public Result<String> createUser(User user) {
 		Log.info("createUser : " + user);
-		
+
 		// Check if user data is valid
-		if(user.getName() == null || user.getPwd() == null || user.getDisplayName() == null || user.getDomain() == null) {
+		if(isUserInvalid(user)) {
 			Log.info("User object invalid.");
 			return Result.error( ErrorCode.BAD_REQUEST);
 		}
-		
+
 		// Insert user, checking if name already exists
 		if( users.putIfAbsent(user.getName(), user) != null ) {
 			Log.info("User already exists.");
 			return Result.error( ErrorCode.CONFLICT);
 		}
+
 		return Result.ok( user.getName()+"@"+user.getDomain()  );
 	}
 
 	@Override
 	public Result<User> getUser(String name, String pwd) {
 		Log.info("getUser : user = " + name + "; pwd = " + pwd);
-		
+
 		// Check if user is valid
-		if(name == null || pwd == null) {
+		if(isUserInvalid(name, pwd)) {
 			Log.info("Name or Password null.");
 			return Result.error( ErrorCode.BAD_REQUEST);
 		}
-		
-		User user = users.get(name);			
-		// Check if user exists 
+
+		// Checks if the user exists
+		User user = users.get(name);
 		if( user == null ) {
 			Log.info("User does not exist.");
 			return Result.error( ErrorCode.NOT_FOUND);
 		}
-		
+
 		//Check if the password is correct
 		if( !user.getPwd().equals( pwd)) {
 			Log.info("Password is incorrect.");
@@ -64,28 +65,18 @@ public class JavaUsers implements Users {
 	public Result<User> updateUser(String name, String pwd, User user) {
 		Log.info("updateUser : name = " + name + "; pwd = " + pwd + "; user = " + user);
 
-		// Check if user is valid
-		if(name == null || pwd == null || !name.equals(user.getName()) ) {
-			Log.info("Name or Password null.");
+		if (!name.equals(user.getName())) {
+			Log.info("The name provided and the updated user's name don't match");
 			return Result.error( ErrorCode.BAD_REQUEST);
 		}
 
-		var u = users.get(name);
+		// Check if user is valid and password is correct
+		Result<User> res = getUser(name, pwd);
+		if (!res.isOK()) return Result.error(res.error());
+		User u = res.value();
 
-		// Check if user exists
-		if( u == null ) {
-			Log.info("User does not exist.");
-			return Result.error(ErrorCode.NOT_FOUND);
-		}
-
-		//Check if the password is correct
-		if( !u.getPwd().equals( pwd)) {
-			Log.info("Password is incorrect.");
-			return Result.error(ErrorCode.FORBIDDEN);
-		}
 
 		// Name and Domain cannot be changed
-		user.setName(u.getName());
 		user.setDomain(u.getDomain());
 
 		// Checks for null properties
@@ -96,7 +87,6 @@ public class JavaUsers implements Users {
 
 		users.put(name,user);
 
-
 		return Result.ok(user);
 	}
 
@@ -104,29 +94,12 @@ public class JavaUsers implements Users {
 	public Result<User> deleteUser(String name, String pwd) {
 		Log.info("deleteUser : user = " + name + "; pwd = " + pwd);
 
-		// Check if user is valid
-		if(name == null || pwd == null) {
-			Log.info("UserId or password null.");
-			return Result.error( ErrorCode.BAD_REQUEST);
-		}
-
-		var user = users.get(name);
-
-		// Check if user exists
-		if( user == null ) {
-			Log.info("User does not exist.");
-			return Result.error(ErrorCode.NOT_FOUND);
-		}
-
-		// Check if the password is correct
-		if( !user.getPwd().equals( pwd)) {
-			Log.info("Password is incorrect.");
-			return Result.error(ErrorCode.FORBIDDEN);
-		}
+		Result<User> res = getUser(name, pwd);
+		if (!res.isOK()) return Result.error(res.error());
 
 		users.remove(name);
 
-		return Result.ok(user);
+		return Result.ok(res.value());
 	}
 
 	@Override
@@ -140,12 +113,11 @@ public class JavaUsers implements Users {
 		return Result.ok(searchedUsers);
 	}
 
-	@Override
-	public Result<Void> verifyPassword(String name, String pwd) {
-		var res = getUser(name, pwd);
-		if( res.isOK() )
-			return Result.ok();
-		else
-			return Result.error( res.error() );
+	private boolean isUserInvalid( User user ) {
+		return user.getName() == null || user.getPwd() == null || user.getDisplayName() == null || user.getDomain() == null;
+	}
+
+	private boolean isUserInvalid(String name, String pwd) {
+		return name == null || pwd == null;
 	}
 }

@@ -109,7 +109,7 @@ class DiscoveryImpl implements Discovery {
 			if (list == null || list.size() < minEntries)
 				Thread.sleep(DISCOVERY_RETRY_TIMEOUT);
 			else
-				return (URI[]) list.toArray();
+				return list.toArray(new URI[0]);
 		}
 	}
 
@@ -129,9 +129,9 @@ class DiscoveryImpl implements Discovery {
 						Log.info(String.format("Received: %s", msg));
 
 						var parts = msg.split(DELIMITER);
-						if (parts.length == 2) {
+						if (parts.length == 3) {
 							var serviceName = parts[0];
-							var uri = URI.create(parts[1]);
+							var uri = URI.create(parts[2]);
 
 							List<URI> l = discoveries.get(serviceName);
 							if (l == null) {

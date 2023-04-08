@@ -1,7 +1,6 @@
-package sd2223.trab1.clients;
+package sd2223.trab1.clients.rest;
 
 import sd2223.trab1.api.User;
-import sd2223.trab1.clients.rest.RestUsersClient;
 
 import java.io.IOException;
 import java.net.URI;
@@ -18,7 +17,7 @@ public class UpdateUserClient {
     public static void main(String[] args) throws IOException {
 
         if( args.length != 6) {
-            System.err.println( "Use: java sd2223.trab1.clients.UpdateUserClient url name oldpwd pwd domain displayName");
+            System.err.println( "Use: java sd2223.trab1.clients.rest.UpdateUserClient url name oldpwd pwd domain displayName");
             return;
         }
 

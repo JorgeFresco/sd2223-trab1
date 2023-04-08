@@ -27,11 +27,6 @@ public class RestUsersResource extends RestResource implements UsersService {
 	}
 
 	@Override
-	public void verifyPassword(String name, String pwd) {
-		super.fromJavaResult( impl.verifyPassword(name, pwd));
-	}
-	
-	@Override
 	public User updateUser(String name, String pwd, User user) {
 		return super.fromJavaResult( impl.updateUser(name, pwd, user));
 	}

@@ -1,7 +1,6 @@
-package sd2223.trab1.clients;
+package sd2223.trab1.clients.rest;
 
 import sd2223.trab1.api.Message;
-import sd2223.trab1.clients.rest.RestFeedsClient;
 
 import java.io.IOException;
 import java.net.URI;

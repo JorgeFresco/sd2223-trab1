@@ -15,16 +15,16 @@ public class JavaFeeds implements Feeds {
 
     private final Map<String, Map<Long, Message>> feeds;
     private final Map <String, List<User>> subs;
-
     private long num_seq;
 
 
-    private static Logger Log = Logger.getLogger(JavaFeeds.class.getName());
+    private static final Logger Log = Logger.getLogger(JavaFeeds.class.getName());
 
     public JavaFeeds() {
         feeds = new ConcurrentHashMap<>();
         subs = new ConcurrentHashMap<>();
         num_seq = 0;
+
     }
 
     @Override
@@ -79,27 +79,23 @@ public class JavaFeeds implements Feeds {
 
     @Override
     public Result<Message> getMessage(String user, long mid) {
-        /**Log.info("getMessage : user = " + user + "; mid = " + mid);
+        Log.info("getMessage : user = " + user + "; mid = " + mid);
 
-         // Check if message ID is valid
-         if ((Long) mid == null) {
-         Log.info("Message ID null.");
-         throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        // Check if message ID is valid
+        if ((Long) mid == null) {
+            Log.info("Message ID is null.");
+            return Result.error(Result.ErrorCode.BAD_REQUEST);
          }
 
-         var name = user.split("@")[0];
-         var feed = feeds.get(name);
+         var feed = feeds.get(user);
 
          // Checks if message exists
          if (feed == null || feed.get(mid) == null) {
-         Log.info("Message does not exist.");
-         throw new WebApplicationException(Response.Status.NOT_FOUND);
+             Log.info("Message does not exist.");
+             return Result.error(Result.ErrorCode.NOT_FOUND);
          }
 
-
-         return feed.get(mid);
-         **/
-        return null;
+         return Result.ok(feed.get(mid));
     }
 
     @Override
@@ -145,4 +141,5 @@ public class JavaFeeds implements Feeds {
     public Result<List<String>> listSubs(String user) {
         return null;
     }
+
 }

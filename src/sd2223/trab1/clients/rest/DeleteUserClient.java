@@ -1,4 +1,4 @@
-package sd2223.trab1.clients;
+package sd2223.trab1.clients.rest;
 
 import sd2223.trab1.clients.rest.RestUsersClient;
 
@@ -10,7 +10,7 @@ public class DeleteUserClient {
     public static void main(String[] args) throws IOException {
 
         if( args.length != 3) {
-            System.err.println( "Use: java sd2223.trab1.clients.DeleteUserClient url name pwd");
+            System.err.println( "Use: java sd2223.trab1.clients.rest.DeleteUserClient url name pwd");
             return;
         }
 
