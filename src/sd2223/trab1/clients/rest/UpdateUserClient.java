@@ -28,11 +28,7 @@ public class UpdateUserClient {
         String domain = args[4];
         String displayName = args[5];
 
-        User u;
-        if(pwd.equals("null"))
-            u = new User(name, oldpwd, domain, displayName);
-        else
-            u = new User(name, pwd, domain, displayName);
+        User u = new User(name, pwd, domain, displayName);
 
         Log.info("Sending request to server.");
 
