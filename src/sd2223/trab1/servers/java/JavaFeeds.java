@@ -1,14 +1,10 @@
 package sd2223.trab1.servers.java;
 
 import sd2223.trab1.api.Message;
-import sd2223.trab1.api.User;
 import sd2223.trab1.api.java.Feeds;
 import sd2223.trab1.api.java.Result;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -62,9 +58,7 @@ public class JavaFeeds implements Feeds {
          return Result.error(Result.ErrorCode.BAD_REQUEST);
          }
 
-
-         var name = user.split("@")[0];
-         var feed = feeds.get(name);
+         var feed = feeds.get(user);
 
          // Checks if the message exists
          if (feed == null || feed.containsKey(mid)) {
@@ -104,25 +98,18 @@ public class JavaFeeds implements Feeds {
          Log.info("getMessage : user = " + user + "; time = " + time);
 
          if ((Long) time == null || user == null) {
-         Log.info("Time or user null.");
-         return Result.error(Result.ErrorCode.BAD_REQUEST);
+             Log.info("Time or user null.");
+             return Result.error(Result.ErrorCode.BAD_REQUEST);
          }
 
-         var name = user.split("@")[0];
-         var result = new ArrayList<Message>();
-
-         var l = (List<Message>) feeds.get(name).values();
-         var s = subs.get(name);
-         for ( String u:
-         s) {
-         l.addAll(feeds.get(u).values());
-         }
-         for (Message m : l) {
-         if (m.getCreationTime() >= time) ;
-         result.add(m);
+         Map<Long, Message> map = feeds.get(user);
+         if (map == null) {
+             Log.info("User feed does not exist.");
+             return Result.error(Result.ErrorCode.NOT_FOUND);
          }
 
-         return Result.ok(l);
+         List<Message> list = feeds.get(user).values().stream().toList();
+         return Result.ok(list.stream().filter((msg) -> msg.getCreationTime() >= time).toList());
     }
 
     @Override
@@ -135,11 +122,9 @@ public class JavaFeeds implements Feeds {
             return Result.error(Result.ErrorCode.BAD_REQUEST);
         }
 
-        var userName = user.split("@")[0];
-        var subName = user.split("@")[0];
 
-        var sub = subs.get(userName);
-        sub.add( userSub);
+        var sub = subs.computeIfAbsent(user, k -> new LinkedList<>());
+        sub.add(userSub);
 
         return Result.ok();
     }
@@ -154,10 +139,7 @@ public class JavaFeeds implements Feeds {
             return Result.error(Result.ErrorCode.BAD_REQUEST);
         }
 
-        var userName = user.split("@")[0];
-        var subName = user.split("@")[0];
-
-        var sub = subs.get(userName);
+        var sub = subs.get(user);
         sub.remove(userSub);
 
         return Result.ok();
@@ -169,7 +151,10 @@ public class JavaFeeds implements Feeds {
             Log.info("User null.");
             return Result.error(Result.ErrorCode.BAD_REQUEST);
         }
-       return Result.ok(subs.get(user));
+
+        List<String> sub = subs.get(user);
+            return sub != null ? Result.ok(subs.get(user)) : Result.ok(new LinkedList<>());
+
     }
 
 }
