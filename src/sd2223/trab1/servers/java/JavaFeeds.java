@@ -3,12 +3,15 @@ package sd2223.trab1.servers.java;
 import sd2223.trab1.api.Message;
 import sd2223.trab1.api.java.Feeds;
 import sd2223.trab1.api.java.Result;
+import sd2223.trab1.servers.util.Discovery;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 public class JavaFeeds implements Feeds {
+
+    Discovery discovery = Discovery.getInstance();
 
     private final Map<String, Map<Long, Message>> feeds;
     private final Map <String, List<String>> subs;
@@ -45,6 +48,17 @@ public class JavaFeeds implements Feeds {
         msg.setId(num_seq++);
         feed.put(msg.getId(), msg);
 
+        var subList = subs.get(user);
+        for( String u : subs.get(user)){
+            var v= feeds.get(u);
+            if(v== null){
+                var l = new ConcurrentHashMap<Long,Message>();
+                l.put(msg.getId(), msg);
+                feeds.put(u,l);
+            }
+            else
+                v.put(msg.getId(), msg);
+        }
         return Result.ok(msg.getId());
     }
 
@@ -123,9 +137,24 @@ public class JavaFeeds implements Feeds {
         }
 
 
-        var sub = subs.computeIfAbsent(user, k -> new LinkedList<>());
-        sub.add(userSub);
+        var subList = subs.computeIfAbsent(user, k -> new ArrayList<>());
+        subList.add(userSub);
 
+        var t = feeds.get(userSub);
+        var t1 = feeds.get(user);
+        if( t1 == null){
+            t1 = new ConcurrentHashMap<Long, Message>();
+        }
+
+        var name = userSub.split("@")[0];
+        var domain = userSub.split("@")[1];
+        if(t!=null) {
+            for (var m : t.values()) {
+                if (m.getUser().equals(name) && m.getDomain().equals(domain)) {
+                    t1.put(m.getId(), m);
+                }
+            }
+        }
         return Result.ok();
     }
 
