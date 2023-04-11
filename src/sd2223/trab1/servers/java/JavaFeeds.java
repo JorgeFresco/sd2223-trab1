@@ -5,6 +5,7 @@ import sd2223.trab1.api.User;
 import sd2223.trab1.api.java.Feeds;
 import sd2223.trab1.api.java.Result;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,7 @@ import java.util.logging.Logger;
 public class JavaFeeds implements Feeds {
 
     private final Map<String, Map<Long, Message>> feeds;
-    private final Map <String, List<User>> subs;
+    private final Map <String, List<String>> subs;
     private long num_seq;
 
 
@@ -54,14 +55,13 @@ public class JavaFeeds implements Feeds {
     @Override
     public Result<Void> removeFromPersonalFeed(String user, long mid, String pwd) {
          Log.info("removeFromPersonalFeed : user = " + user + "; pwd = " + pwd + "; mid = " + mid);
-        /**
+
          // Checks if message ID is valid
          if ((Long) mid == null) {
          Log.info("Message ID null.");
-         throw new WebApplicationException(Response.Status.BAD_REQUEST);
+         return Result.error(Result.ErrorCode.BAD_REQUEST);
          }
 
-         // TODO Checks if user exists and pwd matches user's password
 
          var name = user.split("@")[0];
          var feed = feeds.get(name);
@@ -69,12 +69,12 @@ public class JavaFeeds implements Feeds {
          // Checks if the message exists
          if (feed == null || feed.containsKey(mid)) {
          Log.info("Message does not exist.");
-         throw new WebApplicationException(Response.Status.NOT_FOUND);
+         return Result.error(Result.ErrorCode.NOT_FOUND);
          }
 
          feed.remove(mid);
-         **/
-        return null;
+
+        return Result.ok();
     }
 
     @Override
@@ -100,12 +100,12 @@ public class JavaFeeds implements Feeds {
 
     @Override
     public Result<List<Message>> getMessages(String user, long time) {
-        /**
+
          Log.info("getMessage : user = " + user + "; time = " + time);
 
          if ((Long) time == null || user == null) {
          Log.info("Time or user null.");
-         throw new WebApplicationException(Response.Status.BAD_REQUEST);
+         return Result.error(Result.ErrorCode.BAD_REQUEST);
          }
 
          var name = user.split("@")[0];
@@ -113,33 +113,63 @@ public class JavaFeeds implements Feeds {
 
          var l = (List<Message>) feeds.get(name).values();
          var s = subs.get(name);
-         for ( User u:
+         for ( String u:
          s) {
-         l.addAll(feeds.get(u.getName()).values());
+         l.addAll(feeds.get(u).values());
          }
          for (Message m : l) {
          if (m.getCreationTime() >= time) ;
          result.add(m);
          }
 
-         return result;
-         **/
-        return null;
+         return Result.ok(l);
     }
 
     @Override
     public Result<Void> subUser(String user, String userSub, String pwd) {
-        return null;
+
+        Log.info("subUser : user = " + user + "; userSub = " + userSub + "; pwd= " +pwd);
+
+        if (userSub == null || user == null) {
+            Log.info("userSub or user null.");
+            return Result.error(Result.ErrorCode.BAD_REQUEST);
+        }
+
+        var userName = user.split("@")[0];
+        var subName = user.split("@")[0];
+
+        var sub = subs.get(userName);
+        sub.add( userSub);
+
+        return Result.ok();
     }
 
     @Override
     public Result<Void> unsubscribeUser(String user, String userSub, String pwd) {
-        return null;
+
+        Log.info("unsubscribeUser : user = " + user + "; userSub = " + userSub + "; pwd= " +pwd);
+
+        if (userSub == null || user == null) {
+            Log.info("userSub or user null.");
+            return Result.error(Result.ErrorCode.BAD_REQUEST);
+        }
+
+        var userName = user.split("@")[0];
+        var subName = user.split("@")[0];
+
+        var sub = subs.get(userName);
+        sub.remove(userSub);
+
+        return Result.ok();
     }
 
     @Override
     public Result<List<String>> listSubs(String user) {
-        return null;
+        if (user == null) {
+            Log.info("User null.");
+            return Result.error(Result.ErrorCode.BAD_REQUEST);
+        }
+       return Result.ok(subs.get(user));
     }
 
 }
