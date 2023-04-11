@@ -52,8 +52,6 @@ public class JavaFeeds implements Feeds {
         for (var l : subs.entrySet()) {
             if (l.getValue().contains(user)) {
                 var msgs = feeds.computeIfAbsent(l.getKey(), k -> new HashMap<>());
-                System.out.println("------ User que subscreve: " + l.getKey());
-                System.out.println("------ Subs: " + subs);
                 msgs.put(msg.getId(), msg);
             }
         }
@@ -66,16 +64,16 @@ public class JavaFeeds implements Feeds {
 
          // Checks if message ID is valid
          if ((Long) mid == null) {
-         Log.info("Message ID null.");
-         return Result.error(Result.ErrorCode.BAD_REQUEST);
+             Log.info("Message ID null.");
+             return Result.error(Result.ErrorCode.BAD_REQUEST);
          }
 
          var feed = feeds.get(user);
 
          // Checks if the message exists
-         if (feed == null || feed.containsKey(mid)) {
-         Log.info("Message does not exist.");
-         return Result.error(Result.ErrorCode.NOT_FOUND);
+         if (feed == null || !feed.containsKey(mid)) {
+             Log.info("Message does not exist.");
+             return Result.error(Result.ErrorCode.NOT_FOUND);
          }
 
          feed.remove(mid);
@@ -106,7 +104,6 @@ public class JavaFeeds implements Feeds {
 
     @Override
     public Result<List<Message>> getMessages(String user, long time) {
-
          Log.info("getMessage : user = " + user + "; time = " + time);
 
          if ((Long) time == null || user == null) {
@@ -116,7 +113,7 @@ public class JavaFeeds implements Feeds {
 
          Map<Long, Message> map = feeds.get(user);
          if (map == null) {
-             return Result.ok(new ArrayList<Message>());
+             return Result.ok(new ArrayList<>());
          }
 
          return Result.ok(feeds.get(user).values().stream().filter((msg) -> msg.getCreationTime() >= time).toList());
@@ -133,7 +130,7 @@ public class JavaFeeds implements Feeds {
 
 
         var subList = subs.computeIfAbsent(user, k -> new ArrayList<>());
-        subList.add(userSub);
+        if (!subList.contains(userSub)) subList.add(userSub);
 
         var feedUser = feeds.computeIfAbsent(user,k -> new ConcurrentHashMap<>());
 
@@ -160,10 +157,8 @@ public class JavaFeeds implements Feeds {
             return Result.error(Result.ErrorCode.BAD_REQUEST);
         }
 
-        var sub = subs.get(user);
-         sub.remove(userSub);
-        subs.put(user,sub);
-        System.out.println("------ Subs dps de removido: " + subs.get(user));
+        subs.get(user).remove(userSub);
+
         var l = feeds.get(user);
         List<Message> msgs;
         if (l != null) {
