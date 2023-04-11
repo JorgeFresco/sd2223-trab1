@@ -36,7 +36,7 @@ public class RestFeedsServer {
 
             String domain = args[0];
             int base = Integer.parseInt(args[1]);
-            Discovery.getInstance().announce(SERVICE, domain+":"+SERVICE+"	"+serverURI);
+            // Discovery.getInstance().announce(SERVICE, domain+":"+SERVICE+"	"+serverURI);
 
         } catch (Exception e) {
             Log.severe(e.getMessage());

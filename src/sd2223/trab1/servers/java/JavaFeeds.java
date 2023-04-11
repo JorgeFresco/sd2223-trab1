@@ -48,19 +48,17 @@ public class JavaFeeds implements Feeds {
         msg.setId(num_seq++);
         feed.put(msg.getId(), msg);
 
-        var subList = subs.get(user);
-        for( String u : subs.get(user)){
-            var v= feeds.get(u);
-            if(v== null){
-                var l = new ConcurrentHashMap<Long,Message>();
-                l.put(msg.getId(), msg);
-                feeds.put(u,l);
+
+        for (var l : subs.entrySet()) {
+            if (l.getValue().contains(user)) {
+                var msgs = feeds.computeIfAbsent(l.getKey(), k -> new HashMap<>());
+                System.out.println("------ User que subscreve: " + l.getKey());
+                System.out.println("------ Subs: " + subs);
+                msgs.put(msg.getId(), msg);
             }
-            else
-                v.put(msg.getId(), msg);
         }
         return Result.ok(msg.getId());
-    }
+   }
 
     @Override
     public Result<Void> removeFromPersonalFeed(String user, long mid, String pwd) {
@@ -118,17 +116,14 @@ public class JavaFeeds implements Feeds {
 
          Map<Long, Message> map = feeds.get(user);
          if (map == null) {
-             Log.info("User feed does not exist.");
-             return Result.error(Result.ErrorCode.NOT_FOUND);
+             return Result.ok(new ArrayList<Message>());
          }
 
-         List<Message> list = feeds.get(user).values().stream().toList();
-         return Result.ok(list.stream().filter((msg) -> msg.getCreationTime() >= time).toList());
+         return Result.ok(feeds.get(user).values().stream().filter((msg) -> msg.getCreationTime() >= time).toList());
     }
 
     @Override
     public Result<Void> subUser(String user, String userSub, String pwd) {
-
         Log.info("subUser : user = " + user + "; userSub = " + userSub + "; pwd= " +pwd);
 
         if (userSub == null || user == null) {
@@ -140,27 +135,24 @@ public class JavaFeeds implements Feeds {
         var subList = subs.computeIfAbsent(user, k -> new ArrayList<>());
         subList.add(userSub);
 
-        var t = feeds.get(userSub);
-        var t1 = feeds.get(user);
-        if( t1 == null){
-            t1 = new ConcurrentHashMap<Long, Message>();
-        }
+        var feedUser = feeds.computeIfAbsent(user,k -> new ConcurrentHashMap<>());
 
-        var name = userSub.split("@")[0];
+        var name= userSub.split("@")[0];
         var domain = userSub.split("@")[1];
-        if(t!=null) {
-            for (var m : t.values()) {
-                if (m.getUser().equals(name) && m.getDomain().equals(domain)) {
-                    t1.put(m.getId(), m);
+        var feedSub = feeds.get(userSub);
+        if(feedSub != null) {
+            for (var m : feedSub.values()) {
+                if (name.equals(m.getUser()) && domain.equals(m.getDomain())) {
+                    feedUser.put(m.getId(), m);
                 }
             }
         }
+
         return Result.ok();
     }
 
     @Override
     public Result<Void> unsubscribeUser(String user, String userSub, String pwd) {
-
         Log.info("unsubscribeUser : user = " + user + "; userSub = " + userSub + "; pwd= " +pwd);
 
         if (userSub == null || user == null) {
@@ -169,8 +161,21 @@ public class JavaFeeds implements Feeds {
         }
 
         var sub = subs.get(user);
-        sub.remove(userSub);
-
+         sub.remove(userSub);
+        subs.put(user,sub);
+        System.out.println("------ Subs dps de removido: " + subs.get(user));
+        var l = feeds.get(user);
+        List<Message> msgs;
+        if (l != null) {
+            msgs = l.values().stream().toList();
+            for(var m : msgs) {
+                var name = userSub.split("@")[0];
+                var domain = userSub.split("@")[1];
+                if (name.equals(m.getUser()) && domain.equals(m.getDomain())) {
+                    l.remove(m.getId());
+                }
+            }
+        }
         return Result.ok();
     }
 

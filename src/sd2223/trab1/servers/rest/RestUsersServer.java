@@ -35,7 +35,7 @@ public class RestUsersServer {
 			Log.info(String.format("%s Server ready @ %s\n", SERVICE, serverURI));
 
 			String domain = args[0];
-			Discovery.getInstance().announce(domain+":"+SERVICE, serverURI);
+			// Discovery.getInstance().announce(domain+":"+SERVICE, serverURI);
 
 		} catch (Exception e) {
 			Log.severe(e.getMessage());
