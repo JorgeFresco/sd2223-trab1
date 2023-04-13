@@ -8,7 +8,7 @@ import java.net.URI;
 import java.util.logging.Logger;
 
 public class GetMessagesClient {
-    private static Logger Log = Logger.getLogger(PostMessageClient.class.getName());
+    private static Logger Log = Logger.getLogger(GetMessagesClient.class.getName());
 
     static {
         System.setProperty("java.net.preferIPv4Stack", "true");

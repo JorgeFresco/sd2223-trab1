@@ -1,6 +1,5 @@
 package sd2223.trab1.clients.soap;
 
-import sd2223.trab1.api.Message;
 import sd2223.trab1.clients.rest.PostMessageClient;
 import sd2223.trab1.clients.rest.RestFeedsClient;
 
@@ -8,8 +7,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.logging.Logger;
 
-public class GetMessageClient {
-    private static Logger Log = Logger.getLogger(GetMessageClient.class.getName());
+public class ListSubsClient {
+    private static Logger Log = Logger.getLogger(ListSubsClient.class.getName());
 
     static {
         System.setProperty("java.net.preferIPv4Stack", "true");
@@ -17,19 +16,20 @@ public class GetMessageClient {
 
     public static void main(String[] args) throws IOException {
 
-        if (args.length != 4) {
-            System.err.println("usage: serverUri user domain mid");
+        if (args.length != 3) {
+            System.err.println("usage: serverUri user domain");
             return;
         }
 
         String serverURI = args[0];
         String user = args[1];
         String domain = args[2];
-        String mid = args[3];
+
+        Log.info("Sending request to server.");
 
         var feeds = new SoapFeedsClient( URI.create( serverURI ));
 
-        var res = feeds.getMessage(user+"@"+domain,Long.parseLong(mid));
+        var res = feeds.listSubs(user+"@"+domain);
         System.out.println( res );
     }
 }
