@@ -1,15 +1,17 @@
 package sd2223.trab1.clients.soap;
 
 import java.net.URI;
-
+import java.util.logging.Logger;
 import sd2223.trab1.api.User;
 
-public class CreateUsersClient {
+public class CreateUserClient {
+
+	private static Logger Log = Logger.getLogger(CreateUserClient.class.getName());
 
 	public static void main(String[] args) {
 		if( args.length != 5) {
 			System.err.println("usage: serverUri name pwd domain displayName");
-			System.exit(0);
+			return;
 		}
 		
 		var serverURI = args[0];
@@ -21,7 +23,10 @@ public class CreateUsersClient {
 		var users = new SoapUsersClient( URI.create( serverURI ));
 		
 		var res = users.createUser( new User( name, pwd, domain, displayName) );
-		System.out.println( res );
+
+		Log.info("Sending request to server.");
+
+		System.out.println("Result: " + res );
 	}
 
 }

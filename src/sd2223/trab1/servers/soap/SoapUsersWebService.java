@@ -2,7 +2,6 @@ package sd2223.trab1.servers.soap;
 
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import sd2223.trab1.api.User;
 import sd2223.trab1.api.java.Users;
@@ -13,8 +12,6 @@ import jakarta.jws.WebService;
 
 @WebService(serviceName=UsersService.NAME, targetNamespace=UsersService.NAMESPACE, endpointInterface=UsersService.INTERFACE)
 public class SoapUsersWebService extends SoapWebService<UsersException> implements UsersService {
-
-	static Logger Log = Logger.getLogger(SoapUsersWebService.class.getName());
 	
 	final Users impl;
 	public SoapUsersWebService() {
@@ -45,6 +42,11 @@ public class SoapUsersWebService extends SoapWebService<UsersException> implemen
 	@Override
 	public List<User> searchUsers(String pattern) throws UsersException {
 		return super.fromJavaResult( impl.searchUsers(pattern));
+	}
+
+	@Override
+	public boolean userExists(String name) throws UsersException {
+		return super.fromJavaResult( impl.userExists(name));
 	}
 
 }

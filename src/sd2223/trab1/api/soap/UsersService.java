@@ -58,5 +58,13 @@ public interface UsersService {
 	 * @throws UsersException otherwise
 	 */
 	@WebMethod
-	List<User> searchUsers(String pattern) throws UsersException;	
+	List<User> searchUsers(String pattern) throws UsersException;
+
+	/**
+	 * Checks if a user with the provided name exists
+	 * @param name the name of the user
+	 * @return true if the user exists or false otherwise
+	 */
+	@WebMethod
+	boolean userExists(String name) throws UsersException;
 }

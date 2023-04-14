@@ -103,4 +103,13 @@ public interface FeedsService {
 	 */
 	@WebMethod
 	List<String> listSubs(String user) throws FeedsException;
+
+	/**
+	 * Deletes the provided user feed.
+	 *
+	 * @param user user who's feed is to be deleted (format user@domain)
+	 *
+	 */
+	@WebMethod
+    void deleteFeed(String user) throws FeedsException;
 }

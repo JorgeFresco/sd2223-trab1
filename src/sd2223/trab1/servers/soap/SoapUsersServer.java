@@ -6,11 +6,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jakarta.xml.ws.Endpoint;
+import sd2223.trab1.servers.util.Discovery;
 
 public class SoapUsersServer {
 
 	public static final int PORT = 9090;
-	public static final String SERVICE_NAME = "users";
+	public static final String SERVICE = "users";
 	public static String SERVER_BASE_URI = "http://%s:%s/soap";
 
 	private static Logger Log = Logger.getLogger(SoapUsersServer.class.getName());
@@ -22,6 +23,12 @@ public class SoapUsersServer {
 //		System.setProperty("com.sun.xml.ws.transport.http.HttpAdapter.dump", "true");
 //		System.setProperty("com.sun.xml.internal.ws.transport.http.HttpAdapter.dump", "true");
 
+		if (args.length != 1) {
+			System.err.println("Use: java sd2223.trab1.servers.soap.SoapUsersServer domain");
+			return;
+		}
+		String domain = args[0];
+
 		Log.setLevel(Level.INFO);
 
 		String ip = InetAddress.getLocalHost().getHostAddress();
@@ -29,6 +36,9 @@ public class SoapUsersServer {
 
 		Endpoint.publish(serverURI.replace(ip, "0.0.0.0"), new SoapUsersWebService());
 
-		Log.info(String.format("%s Soap Server ready @ %s\n", SERVICE_NAME, serverURI));
+		String serviceName = domain+":"+SERVICE;
+		Log.info(String.format("%s Soap Server ready @ %s\n", serviceName, serverURI));
+
+		Discovery.getInstance().announce(serviceName, serverURI);
 	}
 }

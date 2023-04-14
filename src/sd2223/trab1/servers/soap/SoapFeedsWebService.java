@@ -3,23 +3,15 @@ package sd2223.trab1.servers.soap;
 
 import jakarta.jws.WebService;
 import sd2223.trab1.api.Message;
-import sd2223.trab1.api.User;
 import sd2223.trab1.api.java.Feeds;
-import sd2223.trab1.api.java.Users;
 import sd2223.trab1.api.soap.FeedsException;
 import sd2223.trab1.api.soap.FeedsService;
-import sd2223.trab1.api.soap.UsersException;
-import sd2223.trab1.api.soap.UsersService;
 import sd2223.trab1.servers.java.JavaFeeds;
-import sd2223.trab1.servers.java.JavaUsers;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 @WebService(serviceName=FeedsService.NAME, targetNamespace= FeedsService.NAMESPACE, endpointInterface=FeedsService.INTERFACE)
 public class SoapFeedsWebService extends SoapWebService<FeedsException> implements FeedsService {
-
-	static Logger Log = Logger.getLogger(SoapFeedsWebService.class.getName());
 
 	final Feeds impl;
 	public SoapFeedsWebService() {
@@ -62,5 +54,10 @@ public class SoapFeedsWebService extends SoapWebService<FeedsException> implemen
 	@Override
 	public List<String> listSubs(String user) throws FeedsException {
 		return super.fromJavaResult( impl.listSubs(user));
+	}
+
+	@Override
+	public void deleteFeed(String user) throws FeedsException {
+		super.fromJavaResult( impl.deleteFeed(user));
 	}
 }

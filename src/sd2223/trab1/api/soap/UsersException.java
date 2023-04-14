@@ -5,7 +5,6 @@ import jakarta.xml.ws.WebFault;
 @WebFault
 public class UsersException extends Exception {
 
-
 	public UsersException() {
 		super("");
 	}
