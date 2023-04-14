@@ -9,7 +9,7 @@ import jakarta.xml.ws.Endpoint;
 
 public class SoapUsersServer {
 
-	public static final int PORT = 8081;
+	public static final int PORT = 9090;
 	public static final String SERVICE_NAME = "users";
 	public static String SERVER_BASE_URI = "http://%s:%s/soap";
 
