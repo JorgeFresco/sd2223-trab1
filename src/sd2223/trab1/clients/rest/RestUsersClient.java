@@ -82,6 +82,15 @@ public class RestUsersClient extends RestClient implements Users{
 		}
 	}
 
+	private Result<Boolean> clt_userExists(String name) {
+		Response r = target.path("user")
+				.queryParam(UsersService.QUERY, name)
+				.request()
+				.accept(MediaType.APPLICATION_JSON)
+				.get();
+		return super.toJavaResult(r, Boolean.class);
+	}
+
 	@Override
 	public Result<String> createUser(User user) {
 		return super.reTry(() -> clt_createUser(user));
@@ -105,5 +114,10 @@ public class RestUsersClient extends RestClient implements Users{
 	@Override
 	public Result<List<User>> searchUsers(String pattern) {
 		return super.reTry( () -> clt_searchUsers(pattern));
+	}
+
+	@Override
+	public Result<Boolean> userExists(String name) {
+		return super.reTry( () -> clt_userExists(name));
 	}
 }

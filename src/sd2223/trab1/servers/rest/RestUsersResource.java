@@ -41,5 +41,10 @@ public class RestUsersResource extends RestResource implements UsersService {
 		return super.fromJavaResult( impl.searchUsers(pattern));
 	}
 
-		
+	@Override
+	public boolean userExists(String name) {
+		return super.fromJavaResult( impl.userExists(name));
+	}
+
+
 }

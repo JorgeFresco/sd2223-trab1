@@ -94,4 +94,16 @@ public interface UsersService {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	List<User> searchUsers(@QueryParam(QUERY) String pattern);
+
+	/**
+	 * Checks if a user with the provided name exists
+	 * @param name the name of the user
+	 * @return 200 true if the user exists or 200 false otherwise
+	 */
+	@GET
+	@Path("/user")
+	@Produces(MediaType.APPLICATION_JSON)
+	boolean userExists(@QueryParam(QUERY) String name);
 }
+
+

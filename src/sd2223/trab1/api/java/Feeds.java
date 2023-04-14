@@ -3,7 +3,6 @@ package sd2223.trab1.api.java;
 import java.util.List;
 
 import sd2223.trab1.api.Message;
-import  sd2223.trab1.api.User;
 
 public interface Feeds {
 
@@ -21,4 +20,5 @@ public interface Feeds {
 
     Result<List<String>> listSubs(String user);
 
+    Result<Void> deleteFeed(String user);
 }

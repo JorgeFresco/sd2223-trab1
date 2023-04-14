@@ -24,6 +24,12 @@ public class RestUsersServer {
 
 	public static void main(String[] args) {
 		try {
+			if (args.length != 1) {
+				System.err.println("Use: java sd2223.trab1.servers.rest.RestUsersServer domain");
+				return;
+			}
+			String domain = args[0];
+
 			ResourceConfig config = new ResourceConfig();
 			config.register(RestUsersResource.class);
 			// config.register(CustomLoggingFilter.class);
@@ -32,10 +38,10 @@ public class RestUsersServer {
 			String serverURI = String.format(SERVER_URI_FMT, ip, PORT);
 			JdkHttpServerFactory.createHttpServer(URI.create(serverURI.replace(ip, INET_ADDR)), config);
 
-			Log.info(String.format("%s Server ready @ %s\n", SERVICE, serverURI));
+			String serviceName = domain+":"+SERVICE;
+			Log.info(String.format("%s Server ready @ %s\n", serviceName, serverURI));
 
-			String domain = args[0];
-			// Discovery.getInstance().announce(domain+":"+SERVICE, serverURI);
+			Discovery.getInstance().announce(serviceName, serverURI);
 
 		} catch (Exception e) {
 			Log.severe(e.getMessage());

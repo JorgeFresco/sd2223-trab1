@@ -136,4 +136,15 @@ public interface FeedsService {
 	@Path("/sub/list/{" + USER + "}")
 	@Produces(MediaType.APPLICATION_JSON)
 	List<String> listSubs(@PathParam(USER) String user);
+
+	/**
+	 * Deletes the provided user feed.
+	 *
+	 * @param user user who's feed is to be deleted (format user@domain)
+	 * @return 200 if ok
+	 *
+	 */
+	@DELETE
+	@Path("/{" + USER + "}")
+	void deleteFeed(@PathParam(USER) String user);
 }

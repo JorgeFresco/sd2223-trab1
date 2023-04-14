@@ -9,7 +9,6 @@ import sd2223.trab1.api.Message;
 import sd2223.trab1.api.java.Feeds;
 import sd2223.trab1.api.java.Result;
 import sd2223.trab1.api.rest.FeedsService;
-import sd2223.trab1.clients.UsersClientFactory;
 
 import java.net.URI;
 import java.util.List;
@@ -105,6 +104,14 @@ public class RestFeedsClient extends RestClient implements Feeds {
         }
     }
 
+    private Result<Void> clt_deleteFeed(String user) {
+        Response r = target.path(user)
+                .request()
+                .delete();
+
+        return super.toJavaResult(r, Void.class);
+    }
+
 
     @Override
     public Result<Long> postMessage(String user, String pwd, Message msg) {
@@ -144,6 +151,11 @@ public class RestFeedsClient extends RestClient implements Feeds {
     @Override
     public Result<List<String>> listSubs(String user) {
         return super.reTry( () -> clt_listSubs(user));
+    }
+
+    @Override
+    public Result<Void> deleteFeed(String user) {
+        return super.reTry( () -> clt_deleteFeed(user));
     }
 
 }

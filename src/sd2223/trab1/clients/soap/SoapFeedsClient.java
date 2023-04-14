@@ -3,7 +3,6 @@ package sd2223.trab1.clients.soap;
 import sd2223.trab1.api.Message;
 import sd2223.trab1.api.java.Feeds;
 import sd2223.trab1.api.java.Result;
-import sd2223.trab1.api.java.Users;
 
 import java.net.URI;
 import java.util.List;
@@ -45,6 +44,11 @@ public class SoapFeedsClient extends SoapClient implements Feeds {
 
     @Override
     public Result<List<String>> listSubs(String user) {
+        return null;
+    }
+
+    @Override
+    public Result<Void> deleteFeed(String user) {
         return null;
     }
 }

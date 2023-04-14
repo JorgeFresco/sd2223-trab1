@@ -28,7 +28,7 @@ public interface Discovery {
 	 * @param minReplies - minimum number of requested URIs. Blocks until the number is satisfied.
 	 * @return array with the discovered URIs for the given service name.
 	 */
-	URI[] knownUrisOf(String serviceName, int minReplies) throws InterruptedException;
+	URI[] knownUrisOf(String serviceName, int minReplies);
 
 	/**
 	 * Get the instance of the Discovery service
@@ -101,15 +101,18 @@ class DiscoveryImpl implements Discovery {
 
 
 	@Override
-	public URI[] knownUrisOf(String serviceName, int minEntries) throws InterruptedException {
+	public URI[] knownUrisOf(String serviceName, int minEntries) {
 		Log.info(String.format("Discovery.knownUrisOf( serviceName: %s, minEntries: %d\n", serviceName, minEntries));
 
 		while(true) {
 			var list = discoveries.get(serviceName);
-			if (list == null || list.size() < minEntries)
-				Thread.sleep(DISCOVERY_RETRY_TIMEOUT);
-			else
-				return list.toArray(new URI[0]);
+			if (list == null || list.size() < minEntries) {
+				try {
+					Thread.sleep(DISCOVERY_RETRY_TIMEOUT);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			} else return list.toArray(new URI[0]);
 		}
 	}
 
@@ -129,15 +132,11 @@ class DiscoveryImpl implements Discovery {
 						Log.info(String.format("Received: %s", msg));
 
 						var parts = msg.split(DELIMITER);
-						if (parts.length == 3) {
+						if (parts.length == 2) {
 							var serviceName = parts[0];
-							var uri = URI.create(parts[2]);
+							var uri = URI.create(parts[1]);
 
-							List<URI> l = discoveries.get(serviceName);
-							if (l == null) {
-								l = new LinkedList<>();
-								discoveries.put(serviceName, l);
-							}
+							List<URI> l = discoveries.computeIfAbsent(serviceName, k -> new LinkedList<>());
 							l.add(uri);
 						}
 

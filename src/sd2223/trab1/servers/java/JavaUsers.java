@@ -1,5 +1,6 @@
 package sd2223.trab1.servers.java;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,11 +11,17 @@ import sd2223.trab1.api.User;
 import sd2223.trab1.api.java.Result;
 import sd2223.trab1.api.java.Result.ErrorCode;
 import sd2223.trab1.api.java.Users;
+import sd2223.trab1.clients.FeedsClientFactory;
+import sd2223.trab1.servers.util.Discovery;
 
 public class JavaUsers implements Users {
+
+	public static final String FEEDS_SERVICE = "feeds";
 	private final Map<String,User> users = new ConcurrentHashMap<>();
 
 	private static final Logger Log = Logger.getLogger(JavaUsers.class.getName());
+
+	Discovery discovery = Discovery.getInstance();
 
 	@Override
 	public Result<String> createUser(User user) {
@@ -70,11 +77,10 @@ public class JavaUsers implements Users {
 			return Result.error( ErrorCode.BAD_REQUEST);
 		}
 
-		// Check if user is valid and password is correct
+		// Check if user data is valid, the user exists and password is correct
 		Result<User> res = getUser(name, pwd);
 		if (!res.isOK()) return Result.error(res.error());
 		User u = res.value();
-
 
 		// Name and Domain cannot be changed
 		user.setDomain(u.getDomain());
@@ -97,7 +103,11 @@ public class JavaUsers implements Users {
 		Result<User> res = getUser(name, pwd);
 		if (!res.isOK()) return Result.error(res.error());
 
-		users.remove(name);
+		User user = users.remove(name);
+
+		String serviceName = user.getDomain()+":"+ FEEDS_SERVICE;
+		URI[] uris = discovery.knownUrisOf(serviceName, 1);
+		FeedsClientFactory.get(uris[uris.length-1]).deleteFeed(user.getName()+"@"+user.getDomain());
 
 		return Result.ok(res.value());
 	}
@@ -112,6 +122,13 @@ public class JavaUsers implements Users {
 		}
 		return Result.ok(searchedUsers);
 	}
+
+	@Override
+	public Result<Boolean> userExists(String name) {
+		Log.info("userExists : name = " + name);
+		return Result.ok(users.containsKey(name));
+	}
+
 
 	private boolean isUserInvalid( User user ) {
 		return user.getName() == null || user.getPwd() == null || user.getDisplayName() == null || user.getDomain() == null;

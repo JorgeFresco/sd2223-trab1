@@ -1,10 +1,13 @@
 package sd2223.trab1.servers.java;
 
 import sd2223.trab1.api.Message;
+import sd2223.trab1.api.User;
 import sd2223.trab1.api.java.Feeds;
 import sd2223.trab1.api.java.Result;
+import sd2223.trab1.clients.UsersClientFactory;
 import sd2223.trab1.servers.util.Discovery;
 
+import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -13,6 +16,7 @@ public class JavaFeeds implements Feeds {
 
     Discovery discovery = Discovery.getInstance();
 
+    public static final String USERS_SERVICE = "users";
     private final Map<String, Map<Long, Message>> feeds;
     private final Map <String, List<String>> subs;
     private long num_seq;
@@ -31,10 +35,11 @@ public class JavaFeeds implements Feeds {
     public Result<Long> postMessage(String user, String pwd, Message msg) {
         Log.info("postMessage : user = " + user + "; pwd = " + pwd + "; msg = " + msg);
 
-        // Checks if user data is valid
-        if (user == null || pwd == null) {
-            Log.info("Name or password null.");
-            return Result.error( Result.ErrorCode.BAD_REQUEST);
+        // Checks if the user is valid, exists and the password is correct
+        Result<User> res = checkUser(user, pwd);
+        if (!res.isOK()) {
+            Log.info("User either is not valid, doesn't exist or the password is incorrect");
+            return Result.error(res.error());
         }
 
         // Checks if message data is valid
@@ -43,7 +48,7 @@ public class JavaFeeds implements Feeds {
             return Result.error( Result.ErrorCode.BAD_REQUEST);
         }
 
-        var feed = feeds.computeIfAbsent(user, k -> new HashMap<>());
+        var feed = feeds.computeIfAbsent(user, k -> new ConcurrentHashMap<>());
 
         msg.setId(num_seq++);
         feed.put(msg.getId(), msg);
@@ -51,7 +56,7 @@ public class JavaFeeds implements Feeds {
 
         for (var l : subs.entrySet()) {
             if (l.getValue().contains(user)) {
-                var msgs = feeds.computeIfAbsent(l.getKey(), k -> new HashMap<>());
+                var msgs = feeds.computeIfAbsent(l.getKey(), k -> new ConcurrentHashMap<>());
                 msgs.put(msg.getId(), msg);
             }
         }
@@ -61,6 +66,13 @@ public class JavaFeeds implements Feeds {
     @Override
     public Result<Void> removeFromPersonalFeed(String user, long mid, String pwd) {
          Log.info("removeFromPersonalFeed : user = " + user + "; pwd = " + pwd + "; mid = " + mid);
+
+        // Checks if the user is valid, exists and the password is correct
+        Result<User> res = checkUser(user, pwd);
+        if (!res.isOK()) {
+            Log.info("User either is not valid, doesn't exist or the password is incorrect");
+            return Result.error(res.error());
+        }
 
          // Checks if message ID is valid
          if ((Long) mid == null) {
@@ -85,11 +97,17 @@ public class JavaFeeds implements Feeds {
     public Result<Message> getMessage(String user, long mid) {
         Log.info("getMessage : user = " + user + "; mid = " + mid);
 
-        // Check if message ID is valid
-        if ((Long) mid == null) {
-            Log.info("Message ID is null.");
+        // Check if the user and message ID are valid
+        if (user == null || (Long) mid == null) {
+            Log.info("User or message ID is null.");
             return Result.error(Result.ErrorCode.BAD_REQUEST);
-         }
+        }
+
+        // Checks if the user exists
+        if (!userExists(user)) {
+            Log.info("User does not exist.");
+            return Result.error(Result.ErrorCode.NOT_FOUND);
+        }
 
          var feed = feeds.get(user);
 
@@ -106,9 +124,15 @@ public class JavaFeeds implements Feeds {
     public Result<List<Message>> getMessages(String user, long time) {
          Log.info("getMessage : user = " + user + "; time = " + time);
 
-         if ((Long) time == null || user == null) {
-             Log.info("Time or user null.");
-             return Result.error(Result.ErrorCode.BAD_REQUEST);
+        if ((Long) time == null || user == null) {
+            Log.info("Time or user null.");
+            return Result.error(Result.ErrorCode.BAD_REQUEST);
+        }
+
+         // Checks if the user exists
+         if (!userExists(user)) {
+             Log.info("User does not exist.");
+             return Result.error(Result.ErrorCode.NOT_FOUND);
          }
 
          Map<Long, Message> map = feeds.get(user);
@@ -123,11 +147,23 @@ public class JavaFeeds implements Feeds {
     public Result<Void> subUser(String user, String userSub, String pwd) {
         Log.info("subUser : user = " + user + "; userSub = " + userSub + "; pwd= " +pwd);
 
-        if (userSub == null || user == null) {
-            Log.info("userSub or user null.");
+        // Checks if the user is valid, exists and the password is correct
+        Result<User> res = checkUser(user, pwd);
+        if (!res.isOK()) {
+            Log.info("User either is not valid, doesn't exist or the password is incorrect");
+            return Result.error(res.error());
+        }
+
+        if (userSub == null) {
+            Log.info("userSub null.");
             return Result.error(Result.ErrorCode.BAD_REQUEST);
         }
 
+        // Checks if the userSub exists
+        if (!userExists(userSub)) {
+            Log.info("User to subscribe does not exist.");
+            return Result.error(Result.ErrorCode.NOT_FOUND);
+        }
 
         var subList = subs.computeIfAbsent(user, k -> new ArrayList<>());
         if (!subList.contains(userSub)) subList.add(userSub);
@@ -152,9 +188,23 @@ public class JavaFeeds implements Feeds {
     public Result<Void> unsubscribeUser(String user, String userSub, String pwd) {
         Log.info("unsubscribeUser : user = " + user + "; userSub = " + userSub + "; pwd= " +pwd);
 
-        if (userSub == null || user == null) {
-            Log.info("userSub or user null.");
-            return Result.error(Result.ErrorCode.BAD_REQUEST);
+        // Checks if the user is valid, exists and the password is correct
+        Result<User> res = checkUser(user, pwd);
+        if (!res.isOK()) {
+            Log.info("User either is not valid, doesn't exist or the password is incorrect");
+            return Result.error(res.error());
+        }
+
+        // Checks if the user exists
+        if (!userExists(user)) {
+            Log.info("User does not exist.");
+            return Result.error(Result.ErrorCode.NOT_FOUND);
+        }
+
+        // Checks if the userSub exists
+        if (!userExists(userSub)) {
+            Log.info("User to unsubscribe does not exist.");
+            return Result.error(Result.ErrorCode.NOT_FOUND);
         }
 
         subs.get(user).remove(userSub);
@@ -176,14 +226,56 @@ public class JavaFeeds implements Feeds {
 
     @Override
     public Result<List<String>> listSubs(String user) {
+        Log.info("listSubs : user = " + user);
         if (user == null) {
             Log.info("User null.");
             return Result.error(Result.ErrorCode.BAD_REQUEST);
         }
 
-        List<String> sub = subs.get(user);
-            return sub != null ? Result.ok(subs.get(user)) : Result.ok(new LinkedList<>());
+        // Checks if the user exists
+        if (!userExists(user)) {
+            Log.info("User does not exist.");
+            return Result.error(Result.ErrorCode.NOT_FOUND);
+        }
 
+        List<String> subList = subs.get(user);
+
+        return subList != null ? Result.ok(subList) : Result.ok(new LinkedList<>());
+    }
+
+    @Override
+    public Result<Void> deleteFeed(String user) {
+        Log.info("deleteFeed : user = " + user);
+        feeds.remove(user);
+        subs.remove(user);
+        return Result.ok();
+    }
+
+    /**
+     * Checks if the user provided is valid, exists and the password is correct
+     * @param user username and domain
+     * @param pwd user password
+     * @return the result of the getUser operation
+     */
+    private Result<User> checkUser(String user, String pwd) {
+        String[] parts = user.split("@");
+        String name = parts[0];
+        String domain = parts[1];
+
+        String serviceName = domain + ":" + USERS_SERVICE;
+        URI[] uris = discovery.knownUrisOf(serviceName, 1);
+        return UsersClientFactory.get(uris[uris.length-1]).getUser(name, pwd);
+    }
+
+    private boolean userExists(String user) {
+        String[] parts = user.split("@");
+        String name = parts[0];
+        String domain = parts[1];
+
+        String serviceName = domain + ":" + USERS_SERVICE;
+        URI[] uris = discovery.knownUrisOf(serviceName, 1);
+        Result<Boolean> res = UsersClientFactory.get(uris[uris.length-1]).userExists(name);
+        return res.isOK() && res.value();
     }
 
 }

@@ -55,5 +55,10 @@ public class SoapUsersClient extends SoapClient implements Users {
 		throw new RuntimeException("Not Implemented...");
 	}
 
-	
+	@Override
+	public Result<Boolean> userExists(String name) {
+		throw new RuntimeException("Not Implemented...");
+	}
+
+
 }
