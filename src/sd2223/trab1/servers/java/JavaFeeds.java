@@ -35,17 +35,26 @@ public class JavaFeeds implements Feeds {
     public Result<Long> postMessage(String user, String pwd, Message msg) {
         Log.info("postMessage : user = " + user + "; pwd = " + pwd + "; msg = " + msg);
 
+        // Checks if message data is valid
+        if (msg == null || msg.getUser() == null || msg.getDomain() == null || msg.getText() == null) {
+            Log.info("Message object invalid.");
+            return Result.error( Result.ErrorCode.BAD_REQUEST);
+        }
+
+        // Checks if the user and the message name and domain match
+        String[] parts = user.split("@");
+        String name = parts[0];
+        String domain = parts[1];
+        if (!name.equals(msg.getUser()) || !domain.equals(msg.getDomain())) {
+            Log.info("Message user or domain do not match the provided user.");
+            return Result.error( Result.ErrorCode.BAD_REQUEST);
+        }
+
         // Checks if the user is valid, exists and the password is correct
         Result<User> res = checkUser(user, pwd);
         if (!res.isOK()) {
             Log.info("User either is not valid, doesn't exist or the password is incorrect");
             return Result.error(res.error());
-        }
-
-        // Checks if message data is valid
-        if (msg == null || msg.getUser() == null || msg.getDomain() == null || msg.getText() == null) {
-            Log.info("Message object invalid.");
-            return Result.error( Result.ErrorCode.BAD_REQUEST);
         }
 
         var feed = feeds.computeIfAbsent(user, k -> new ConcurrentHashMap<>());
@@ -140,7 +149,7 @@ public class JavaFeeds implements Feeds {
              return Result.ok(new ArrayList<>());
          }
 
-         return Result.ok(feeds.get(user).values().stream().filter((msg) -> msg.getCreationTime() >= time).toList());
+         return Result.ok(feeds.get(user).values().stream().filter((msg) -> msg.getCreationTime() > time).toList());
     }
 
     @Override
