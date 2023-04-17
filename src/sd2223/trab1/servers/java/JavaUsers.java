@@ -23,7 +23,13 @@ public class JavaUsers implements Users {
 
 	Discovery discovery = Discovery.getInstance();
 
-	@Override
+	private String domain;
+
+    public JavaUsers(String domain) {
+		this.domain = domain;
+    }
+
+    @Override
 	public Result<String> createUser(User user) {
 		Log.info("createUser : " + user);
 

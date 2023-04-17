@@ -14,9 +14,9 @@ import jakarta.jws.WebService;
 public class SoapUsersWebService extends SoapWebService<UsersException> implements UsersService {
 	
 	final Users impl;
-	public SoapUsersWebService() {
+	public SoapUsersWebService(String domain) {
 		super( (result)-> new UsersException( result.error().toString()));
-		this.impl = new JavaUsers();
+		this.impl = new JavaUsers(domain);
 	}
 
 	@Override

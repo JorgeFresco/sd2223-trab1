@@ -29,10 +29,10 @@ public class RestFeedsServer {
                 return;
             }
             String domain = args[0];
-            int base = Integer.parseInt(args[1]);
+            long base = Long.parseLong(args[1]);
 
             ResourceConfig config = new ResourceConfig();
-            config.register(RestFeedsResource.class);
+            config.register(new RestFeedsResource(domain, base));
             // config.register(CustomLoggingFilter.class);
 
             String ip = InetAddress.getLocalHost().getHostAddress();

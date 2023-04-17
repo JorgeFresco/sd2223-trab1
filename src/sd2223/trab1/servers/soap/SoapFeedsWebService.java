@@ -14,9 +14,9 @@ import java.util.List;
 public class SoapFeedsWebService extends SoapWebService<FeedsException> implements FeedsService {
 
 	final Feeds impl;
-	public SoapFeedsWebService() {
+	public SoapFeedsWebService(String domain, long base) {
 		super( (result)-> new FeedsException( result.error().toString()));
-		this.impl = new JavaFeeds();
+		this.impl = new JavaFeeds(domain, base);
 	}
 
 

@@ -13,6 +13,8 @@ public class RestUsersServer {
 
 	private static Logger Log = Logger.getLogger(RestUsersServer.class.getName());
 
+
+
 	static {
 		System.setProperty("java.net.preferIPv4Stack", "true");
 	}
@@ -31,7 +33,7 @@ public class RestUsersServer {
 			String domain = args[0];
 
 			ResourceConfig config = new ResourceConfig();
-			config.register(RestUsersResource.class);
+			config.register(new RestUsersResource(domain));
 			// config.register(CustomLoggingFilter.class);
 
 			String ip = InetAddress.getLocalHost().getHostAddress();

@@ -17,17 +17,22 @@ public class JavaFeeds implements Feeds {
     Discovery discovery = Discovery.getInstance();
 
     public static final String USERS_SERVICE = "users";
+
     private final Map<String, Map<Long, Message>> feeds;
     private final Map <String, List<String>> subs;
     private long num_seq;
+    private String domain;
+    private long base;
 
 
     private static final Logger Log = Logger.getLogger(JavaFeeds.class.getName());
 
-    public JavaFeeds() {
+    public JavaFeeds(String domain, long base) {
         feeds = new ConcurrentHashMap<>();
         subs = new ConcurrentHashMap<>();
         num_seq = 0;
+        this.domain = domain;
+        this.base = base;
 
     }
 
@@ -41,6 +46,13 @@ public class JavaFeeds implements Feeds {
             return Result.error( Result.ErrorCode.BAD_REQUEST);
         }
 
+        // Checks if the user is valid, exists and the password is correct
+        Result<User> res = checkUser(user, pwd);
+        if (!res.isOK()) {
+            Log.info("User either is not valid, doesn't exist or the password is incorrect");
+            return Result.error(res.error());
+        }
+
         // Checks if the user and the message name and domain match
         String[] parts = user.split("@");
         String name = parts[0];
@@ -50,25 +62,19 @@ public class JavaFeeds implements Feeds {
             return Result.error( Result.ErrorCode.BAD_REQUEST);
         }
 
-        // Checks if the user is valid, exists and the password is correct
-        Result<User> res = checkUser(user, pwd);
-        if (!res.isOK()) {
-            Log.info("User either is not valid, doesn't exist or the password is incorrect");
-            return Result.error(res.error());
-        }
-
         var feed = feeds.computeIfAbsent(user, k -> new ConcurrentHashMap<>());
 
-        msg.setId(num_seq++);
+        msg.setId(getNextMsgId());
         feed.put(msg.getId(), msg);
 
-
+        /**
         for (var l : subs.entrySet()) {
             if (l.getValue().contains(user)) {
                 var msgs = feeds.computeIfAbsent(l.getKey(), k -> new ConcurrentHashMap<>());
                 msgs.put(msg.getId(), msg);
             }
         }
+         **/
         return Result.ok(msg.getId());
    }
 
@@ -177,6 +183,7 @@ public class JavaFeeds implements Feeds {
         var subList = subs.computeIfAbsent(user, k -> new ArrayList<>());
         if (!subList.contains(userSub)) subList.add(userSub);
 
+        /**
         var feedUser = feeds.computeIfAbsent(user,k -> new ConcurrentHashMap<>());
 
         var name= userSub.split("@")[0];
@@ -189,7 +196,7 @@ public class JavaFeeds implements Feeds {
                 }
             }
         }
-
+        **/
         return Result.ok();
     }
 
@@ -218,6 +225,7 @@ public class JavaFeeds implements Feeds {
 
         subs.get(user).remove(userSub);
 
+        /**
         var l = feeds.get(user);
         List<Message> msgs;
         if (l != null) {
@@ -230,6 +238,7 @@ public class JavaFeeds implements Feeds {
                 }
             }
         }
+         **/
         return Result.ok();
     }
 
@@ -276,6 +285,11 @@ public class JavaFeeds implements Feeds {
         return UsersClientFactory.get(uris[uris.length-1]).getUser(name, pwd);
     }
 
+    /**
+     * Checks if the user exists
+     * @param user username and domain of the user
+     * @return true if the user exists or false otherwise
+     */
     private boolean userExists(String user) {
         String[] parts = user.split("@");
         String name = parts[0];
@@ -285,6 +299,14 @@ public class JavaFeeds implements Feeds {
         URI[] uris = discovery.knownUrisOf(serviceName, 1);
         Result<Boolean> res = UsersClientFactory.get(uris[uris.length-1]).userExists(name);
         return res.isOK() && res.value();
+    }
+
+    /**
+     * Calculates and returns the next message id
+     * @return the next message id
+     */
+    private long getNextMsgId() {
+        return (num_seq++) * 256 + base;
     }
 
 }

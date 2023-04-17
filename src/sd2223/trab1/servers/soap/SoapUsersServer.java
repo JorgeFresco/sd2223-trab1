@@ -34,7 +34,7 @@ public class SoapUsersServer {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		String serverURI = String.format(SERVER_BASE_URI, ip, PORT);
 
-		Endpoint.publish(serverURI.replace(ip, "0.0.0.0"), new SoapUsersWebService());
+		Endpoint.publish(serverURI.replace(ip, "0.0.0.0"), new SoapUsersWebService(domain));
 
 		String serviceName = domain+":"+SERVICE;
 		Log.info(String.format("%s Soap Server ready @ %s\n", serviceName, serverURI));
