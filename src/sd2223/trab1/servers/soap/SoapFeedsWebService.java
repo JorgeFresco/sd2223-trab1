@@ -9,6 +9,7 @@ import sd2223.trab1.api.soap.FeedsService;
 import sd2223.trab1.servers.java.JavaFeeds;
 
 import java.util.List;
+import java.util.Map;
 
 @WebService(serviceName=FeedsService.NAME, targetNamespace= FeedsService.NAMESPACE, endpointInterface=FeedsService.INTERFACE)
 public class SoapFeedsWebService extends SoapWebService<FeedsException> implements FeedsService {
@@ -59,5 +60,10 @@ public class SoapFeedsWebService extends SoapWebService<FeedsException> implemen
 	@Override
 	public void deleteFeed(String user) throws FeedsException {
 		super.fromJavaResult( impl.deleteFeed(user));
+	}
+
+	@Override
+	public Map<Long, Message> getPersonalFeed(String user) throws FeedsException {
+		return super.fromJavaResult( impl.getPersonalFeed(user));
 	}
 }

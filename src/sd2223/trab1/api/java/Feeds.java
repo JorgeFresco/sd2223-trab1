@@ -1,6 +1,7 @@
 package sd2223.trab1.api.java;
 
 import java.util.List;
+import java.util.Map;
 
 import sd2223.trab1.api.Message;
 
@@ -21,4 +22,6 @@ public interface Feeds {
     Result<List<String>> listSubs(String user);
 
     Result<Void> deleteFeed(String user);
+
+    Result<Map<Long, Message>> getPersonalFeed(String user);
 }

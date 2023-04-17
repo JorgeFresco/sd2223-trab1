@@ -1,9 +1,12 @@
 package sd2223.trab1.api.soap;
 
 import java.util.List;
+import java.util.Map;
 
 import jakarta.jws.WebMethod;
 import jakarta.jws.WebService;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 import sd2223.trab1.api.Message;
 
 @WebService(serviceName=FeedsService.NAME, targetNamespace=FeedsService.NAMESPACE, endpointInterface=FeedsService.INTERFACE)
@@ -108,8 +111,18 @@ public interface FeedsService {
 	 * Deletes the provided user feed.
 	 *
 	 * @param user user who's feed is to be deleted (format user@domain)
-	 *
+	 * @throws 	NOT_FOUND if the user does not exist
 	 */
 	@WebMethod
     void deleteFeed(String user) throws FeedsException;
+
+	/**
+	 * Returns the user's personal feed
+	 * @param user user being accessed (format user@domain)
+	 * @return map with the user's personal messages
+	 * @throws NOT_FOUND if the user doesn't have any message
+	 *
+	 */
+	@WebMethod
+	Map<Long, Message> getPersonalFeed(String user) throws FeedsException;
 }

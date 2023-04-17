@@ -23,7 +23,7 @@ public class SoapFeedsServer {
 //		System.setProperty("com.sun.xml.internal.ws.transport.http.HttpAdapter.dump", "true");
 
         if (args.length != 2) {
-            System.err.println("Use: java sd2223.trab1.servers.rest.RestFeedsServer domain base");
+            System.err.println("Use: java sd2223.trab1.servers.soap.SoapFeedsServer domain base");
             return;
         }
         String domain = args[0];

@@ -10,6 +10,7 @@ import sd2223.trab1.api.soap.FeedsService;
 import javax.xml.namespace.QName;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 public class SoapFeedsClient extends SoapClient implements Feeds {
     public SoapFeedsClient(URI uri) {
@@ -65,5 +66,10 @@ public class SoapFeedsClient extends SoapClient implements Feeds {
     @Override
     public Result<Void> deleteFeed(String user) {
         return super.reTry( () -> super.toJavaResult( () -> stub().deleteFeed(user) ) );
+    }
+
+    @Override
+    public Result<Map<Long, Message>> getPersonalFeed(String user) {
+        return super.reTry( () -> super.toJavaResult( () -> stub().getPersonalFeed(user)));
     }
 }

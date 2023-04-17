@@ -4,6 +4,7 @@ import sd2223.trab1.api.Message;
 import sd2223.trab1.api.User;
 import sd2223.trab1.api.java.Feeds;
 import sd2223.trab1.api.java.Result;
+import sd2223.trab1.clients.FeedsClientFactory;
 import sd2223.trab1.clients.UsersClientFactory;
 import sd2223.trab1.servers.util.Discovery;
 
@@ -18,11 +19,13 @@ public class JavaFeeds implements Feeds {
 
     public static final String USERS_SERVICE = "users";
 
+    public static final String FEEDS_SERVICE = "feeds";
+
     private final Map<String, Map<Long, Message>> feeds;
     private final Map <String, List<String>> subs;
     private long num_seq;
-    private String domain;
-    private long base;
+    private final String domain;
+    private final long base;
 
 
     private static final Logger Log = Logger.getLogger(JavaFeeds.class.getName());
@@ -67,14 +70,6 @@ public class JavaFeeds implements Feeds {
         msg.setId(getNextMsgId());
         feed.put(msg.getId(), msg);
 
-        /**
-        for (var l : subs.entrySet()) {
-            if (l.getValue().contains(user)) {
-                var msgs = feeds.computeIfAbsent(l.getKey(), k -> new ConcurrentHashMap<>());
-                msgs.put(msg.getId(), msg);
-            }
-        }
-         **/
         return Result.ok(msg.getId());
    }
 
@@ -88,12 +83,6 @@ public class JavaFeeds implements Feeds {
             Log.info("User either is not valid, doesn't exist or the password is incorrect");
             return Result.error(res.error());
         }
-
-         // Checks if message ID is valid
-         if ((Long) mid == null) {
-             Log.info("Message ID null.");
-             return Result.error(Result.ErrorCode.BAD_REQUEST);
-         }
 
          var feed = feeds.get(user);
 
@@ -113,9 +102,17 @@ public class JavaFeeds implements Feeds {
         Log.info("getMessage : user = " + user + "; mid = " + mid);
 
         // Check if the user and message ID are valid
-        if (user == null || (Long) mid == null) {
+        if (user == null) {
             Log.info("User or message ID is null.");
             return Result.error(Result.ErrorCode.BAD_REQUEST);
+        }
+
+        // If user is a remote user (from other domain)
+        String userDomain = user.split("@")[1];
+        if (!userDomain.equals(domain)) {
+            String serviceName = userDomain + ":" + FEEDS_SERVICE;
+            URI[] uris = discovery.knownUrisOf(serviceName, 1);
+            return FeedsClientFactory.get(uris[uris.length-1]).getMessage(user, mid);
         }
 
         // Checks if the user exists
@@ -124,24 +121,32 @@ public class JavaFeeds implements Feeds {
             return Result.error(Result.ErrorCode.NOT_FOUND);
         }
 
-         var feed = feeds.get(user);
+         var msg = getFeed(user).get(mid);
 
          // Checks if message exists
-         if (feed == null || feed.get(mid) == null) {
+         if (msg == null) {
              Log.info("Message does not exist.");
              return Result.error(Result.ErrorCode.NOT_FOUND);
          }
 
-         return Result.ok(feed.get(mid));
+         return Result.ok(msg);
     }
 
     @Override
     public Result<List<Message>> getMessages(String user, long time) {
          Log.info("getMessage : user = " + user + "; time = " + time);
 
-        if ((Long) time == null || user == null) {
+        if (user == null) {
             Log.info("Time or user null.");
             return Result.error(Result.ErrorCode.BAD_REQUEST);
+        }
+
+        // If user is a remote user (from other domain)
+        String userDomain = user.split("@")[1];
+        if (!userDomain.equals(domain)) {
+            String serviceName = userDomain + ":" + FEEDS_SERVICE;
+            URI[] uris = discovery.knownUrisOf(serviceName, 1);
+            return FeedsClientFactory.get(uris[uris.length-1]).getMessages(user, time);
         }
 
          // Checks if the user exists
@@ -149,17 +154,7 @@ public class JavaFeeds implements Feeds {
              Log.info("User does not exist.");
              return Result.error(Result.ErrorCode.NOT_FOUND);
          }
-
-         Map<Long, Message> map = feeds.computeIfAbsent(user,k -> new ConcurrentHashMap<>());
-         var l=  subs.get(user);
-         if(l != null){
-         for( var u : l){
-             map.putAll(feeds.get(u));
-         }}
-
-
-
-         return Result.ok(map.values().stream().filter((msg) -> msg.getCreationTime() > time).toList());
+         return Result.ok(getFeed(user).values().stream().filter((msg) -> msg.getCreationTime() > time).toList());
     }
 
     @Override
@@ -187,20 +182,6 @@ public class JavaFeeds implements Feeds {
         var subList = subs.computeIfAbsent(user, k -> new ArrayList<>());
         if (!subList.contains(userSub)) subList.add(userSub);
 
-        /**
-        var feedUser = feeds.computeIfAbsent(user,k -> new ConcurrentHashMap<>());
-
-        var name= userSub.split("@")[0];
-        var domain = userSub.split("@")[1];
-        var feedSub = feeds.get(userSub);
-        if(feedSub != null) {
-            for (var m : feedSub.values()) {
-                if (name.equals(m.getUser()) && domain.equals(m.getDomain())) {
-                    feedUser.put(m.getId(), m);
-                }
-            }
-        }
-        **/
         return Result.ok();
     }
 
@@ -229,20 +210,6 @@ public class JavaFeeds implements Feeds {
 
         subs.get(user).remove(userSub);
 
-        /**
-        var l = feeds.get(user);
-        List<Message> msgs;
-        if (l != null) {
-            msgs = l.values().stream().toList();
-            for(var m : msgs) {
-                var name = userSub.split("@")[0];
-                var domain = userSub.split("@")[1];
-                if (name.equals(m.getUser()) && domain.equals(m.getDomain())) {
-                    l.remove(m.getId());
-                }
-            }
-        }
-         **/
         return Result.ok();
     }
 
@@ -270,7 +237,21 @@ public class JavaFeeds implements Feeds {
         Log.info("deleteFeed : user = " + user);
         feeds.remove(user);
         subs.remove(user);
+        for (var l : subs.values()) {
+            l.remove(user);
+        }
+
         return Result.ok();
+    }
+
+    @Override
+    public Result<Map<Long, Message>> getPersonalFeed(String user) {
+        Log.info("getPersonalFeed : user = " + user);
+
+        if (!feeds.containsKey(user))
+            return Result.error(Result.ErrorCode.NOT_FOUND);
+
+        return Result.ok(feeds.get(user));
     }
 
     /**
@@ -311,6 +292,36 @@ public class JavaFeeds implements Feeds {
      */
     private long getNextMsgId() {
         return (num_seq++) * 256 + base;
+    }
+
+    private Map<Long,Message> getFeed(String user) {
+        Map<Long, Message> msgList;
+
+        // Initial msg list
+        Map<Long, Message> userFeed = feeds.get(user);
+        if (userFeed != null) msgList = new HashMap<>(userFeed);
+        else msgList = new HashMap<>();
+
+        // Add to the list all the messages of his subs
+        List<String> userSubs = subs.get(user);
+        if(userSubs != null) {
+            for (String sub: userSubs) {
+                Map<Long, Message> subMsgs = null;
+                String subDomain = sub.split("@")[1];
+                if (subDomain.equals(domain)) subMsgs = feeds.get(sub);
+                else {
+                    String serviceName = subDomain + ":" + FEEDS_SERVICE;
+                    URI[] uris = discovery.knownUrisOf(serviceName, 1);
+                    Result<Map<Long, Message>> res = FeedsClientFactory.get(uris[uris.length-1]).getPersonalFeed(sub);
+                    if(res.isOK()) subMsgs = res.value();
+                }
+
+                if(subMsgs != null) {
+                    msgList.putAll(subMsgs);
+                    }
+                }
+            }
+        return msgList;
     }
 
 }
