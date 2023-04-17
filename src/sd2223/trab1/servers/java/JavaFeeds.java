@@ -150,12 +150,16 @@ public class JavaFeeds implements Feeds {
              return Result.error(Result.ErrorCode.NOT_FOUND);
          }
 
-         Map<Long, Message> map = feeds.get(user);
-         if (map == null) {
-             return Result.ok(new ArrayList<>());
-         }
+         Map<Long, Message> map = feeds.computeIfAbsent(user,k -> new ConcurrentHashMap<>());
+         var l=  subs.get(user);
+         if(l != null){
+         for( var u : l){
+             map.putAll(feeds.get(u));
+         }}
 
-         return Result.ok(feeds.get(user).values().stream().filter((msg) -> msg.getCreationTime() > time).toList());
+
+
+         return Result.ok(map.values().stream().filter((msg) -> msg.getCreationTime() > time).toList());
     }
 
     @Override
