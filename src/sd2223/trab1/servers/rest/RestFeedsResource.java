@@ -9,7 +9,6 @@ import sd2223.trab1.api.rest.FeedsService;
 import sd2223.trab1.servers.java.JavaFeeds;
 
 import java.util.List;
-import java.util.Map;
 
 @Singleton
 public class RestFeedsResource extends RestResource implements FeedsService {
@@ -62,7 +61,7 @@ public class RestFeedsResource extends RestResource implements FeedsService {
     }
 
     @Override
-    public Map<Long, Message> getPersonalFeed(String user) {
+    public List<Message> getPersonalFeed(String user) {
         return super.fromJavaResult(impl.getPersonalFeed(user));
     }
 }

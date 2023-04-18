@@ -23,5 +23,5 @@ public interface Feeds {
 
     Result<Void> deleteFeed(String user);
 
-    Result<Map<Long, Message>> getPersonalFeed(String user);
+    Result<List<Message>> getPersonalFeed(String user);
 }

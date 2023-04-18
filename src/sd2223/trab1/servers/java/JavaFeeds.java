@@ -48,11 +48,11 @@ public class JavaFeeds implements Feeds {
             Log.info("Message object invalid.");
             return Result.error( Result.ErrorCode.BAD_REQUEST);
         }
-        if (domain.equals(user.split("@")[1])) {
-            Log.info("Remote User not allowed.");
+
+        if (user == null || !domain.equals(user.split("@")[1])) {
+            Log.info("User null or remote user.");
             return Result.error( Result.ErrorCode.BAD_REQUEST);
         }
-
 
         // Checks if the user is valid, exists and the password is correct
         Result<User> res = checkUser(user, pwd);
@@ -142,7 +142,7 @@ public class JavaFeeds implements Feeds {
          Log.info("getMessage : user = " + user + "; time = " + time);
 
         if (user == null) {
-            Log.info("Time or user null.");
+            Log.info("User null.");
             return Result.error(Result.ErrorCode.BAD_REQUEST);
         }
 
@@ -166,20 +166,17 @@ public class JavaFeeds implements Feeds {
     public Result<Void> subUser(String user, String userSub, String pwd) {
         Log.info("subUser : user = " + user + "; userSub = " + userSub + "; pwd= " +pwd);
 
+        if (user == null || userSub == null || !domain.equals(user.split("@")[1])) {
+            Log.info("User null or userSub null or remote user");
+            return Result.error( Result.ErrorCode.BAD_REQUEST);
+        }
+
+
         // Checks if the user is valid, exists and the password is correct
         Result<User> res = checkUser(user, pwd);
         if (!res.isOK()) {
             Log.info("User either is not valid, doesn't exist or the password is incorrect");
             return Result.error(res.error());
-        }
-        if (domain.equals(user.split("@")[1])) {
-            Log.info("Remote User not allowed.");
-            return Result.error( Result.ErrorCode.BAD_REQUEST);
-        }
-
-        if (userSub == null) {
-            Log.info("userSub null.");
-            return Result.error(Result.ErrorCode.BAD_REQUEST);
         }
 
         // Checks if the userSub exists
@@ -197,8 +194,9 @@ public class JavaFeeds implements Feeds {
     @Override
     public Result<Void> unsubscribeUser(String user, String userSub, String pwd) {
         Log.info("unsubscribeUser : user = " + user + "; userSub = " + userSub + "; pwd= " +pwd);
-        if (domain.equals(user.split("@")[1])) {
-            Log.info("Remote User not allowed.");
+
+        if (user == null || userSub == null || !domain.equals(user.split("@")[1])) {
+            Log.info("User null or userSub null or remote user.");
             return Result.error( Result.ErrorCode.BAD_REQUEST);
         }
         // Checks if the user is valid, exists and the password is correct
@@ -257,13 +255,13 @@ public class JavaFeeds implements Feeds {
     }
 
     @Override
-    public Result<Map<Long, Message>> getPersonalFeed(String user) {
+    public Result<List<Message>> getPersonalFeed(String user) {
         Log.info("getPersonalFeed : user = " + user);
 
         if (!feeds.containsKey(user))
             return Result.error(Result.ErrorCode.NOT_FOUND);
 
-        return Result.ok(feeds.get(user));
+        return Result.ok(feeds.get(user).values().stream().toList());
     }
 
     /**
@@ -324,8 +322,12 @@ public class JavaFeeds implements Feeds {
                 else {
                     String serviceName = subDomain + ":" + FEEDS_SERVICE;
                     URI[] uris = discovery.knownUrisOf(serviceName, 1);
-                    Result<Map<Long, Message>> res = FeedsClientFactory.get(uris[uris.length-1]).getPersonalFeed(sub);
-                    if(res.isOK()) subMsgs = res.value();
+                    Result<List<Message>> res = FeedsClientFactory.get(uris[uris.length-1]).getPersonalFeed(sub);
+                    if(res.isOK()) {
+                        subMsgs = new HashMap<>();
+                        for(Message m: res.value())
+                            subMsgs.put(m.getId(), m);
+                    }
                 }
 
                 if(subMsgs != null) {

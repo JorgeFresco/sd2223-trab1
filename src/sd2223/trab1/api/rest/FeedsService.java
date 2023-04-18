@@ -1,7 +1,6 @@
 package sd2223.trab1.api.rest;
 
 import java.util.List;
-import java.util.Map;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -156,5 +155,5 @@ public interface FeedsService {
 	@GET
 	@Path("/{" + USER + "}/feed")
 	@Produces(MediaType.APPLICATION_JSON)
-	Map<Long, Message> getPersonalFeed(@PathParam(USER) String user);
+	List<Message> getPersonalFeed(@PathParam(USER) String user);
 }

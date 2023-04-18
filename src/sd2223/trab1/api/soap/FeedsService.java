@@ -1,12 +1,10 @@
 package sd2223.trab1.api.soap;
 
 import java.util.List;
-import java.util.Map;
 
 import jakarta.jws.WebMethod;
 import jakarta.jws.WebService;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
+
 import sd2223.trab1.api.Message;
 
 @WebService(serviceName=FeedsService.NAME, targetNamespace=FeedsService.NAMESPACE, endpointInterface=FeedsService.INTERFACE)
@@ -124,5 +122,5 @@ public interface FeedsService {
 	 *
 	 */
 	@WebMethod
-	Map<Long, Message> getPersonalFeed(String user) throws FeedsException;
+	List<Message> getPersonalFeed(String user) throws FeedsException;
 }

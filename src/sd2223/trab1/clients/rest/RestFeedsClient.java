@@ -12,7 +12,6 @@ import sd2223.trab1.api.rest.FeedsService;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 import static sd2223.trab1.api.java.Result.error;
 import static sd2223.trab1.api.java.Result.ok;
@@ -113,7 +112,7 @@ public class RestFeedsClient extends RestClient implements Feeds {
         return super.toJavaResult(r, Void.class);
     }
 
-    private Result<Map<Long, Message>> clt_getPersonalFeed(String user) {
+    private Result<List<Message>> clt_getPersonalFeed(String user) {
         Response r = target.path(user)
                 .path("feed")
                 .request()
@@ -175,7 +174,7 @@ public class RestFeedsClient extends RestClient implements Feeds {
     }
 
     @Override
-    public Result<Map<Long, Message>> getPersonalFeed(String user) {
+    public Result<List<Message>> getPersonalFeed(String user) {
         return super.reTry( () -> clt_getPersonalFeed(user));
     }
 
