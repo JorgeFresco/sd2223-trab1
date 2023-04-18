@@ -44,10 +44,15 @@ public class JavaFeeds implements Feeds {
         Log.info("postMessage : user = " + user + "; pwd = " + pwd + "; msg = " + msg);
 
         // Checks if message data is valid
-        if (msg == null || msg.getUser() == null || msg.getDomain() == null || msg.getText() == null) {
+        if (msg == null || msg.getUser() == null || msg.getDomain() == null ) {
             Log.info("Message object invalid.");
             return Result.error( Result.ErrorCode.BAD_REQUEST);
         }
+        if (domain.equals(user.split("@")[1])) {
+            Log.info("Remote User not allowed.");
+            return Result.error( Result.ErrorCode.BAD_REQUEST);
+        }
+
 
         // Checks if the user is valid, exists and the password is correct
         Result<User> res = checkUser(user, pwd);
@@ -167,6 +172,10 @@ public class JavaFeeds implements Feeds {
             Log.info("User either is not valid, doesn't exist or the password is incorrect");
             return Result.error(res.error());
         }
+        if (domain.equals(user.split("@")[1])) {
+            Log.info("Remote User not allowed.");
+            return Result.error( Result.ErrorCode.BAD_REQUEST);
+        }
 
         if (userSub == null) {
             Log.info("userSub null.");
@@ -188,7 +197,10 @@ public class JavaFeeds implements Feeds {
     @Override
     public Result<Void> unsubscribeUser(String user, String userSub, String pwd) {
         Log.info("unsubscribeUser : user = " + user + "; userSub = " + userSub + "; pwd= " +pwd);
-
+        if (domain.equals(user.split("@")[1])) {
+            Log.info("Remote User not allowed.");
+            return Result.error( Result.ErrorCode.BAD_REQUEST);
+        }
         // Checks if the user is valid, exists and the password is correct
         Result<User> res = checkUser(user, pwd);
         if (!res.isOK()) {
