@@ -162,7 +162,6 @@ public class RestFeedsClient extends RestClient implements Feeds {
        return super.reTry( () -> clt_unsubscribeUser(user,userSub,pwd));
     }
 
-
     @Override
     public Result<List<String>> listSubs(String user) {
         return super.reTry( () -> clt_listSubs(user));

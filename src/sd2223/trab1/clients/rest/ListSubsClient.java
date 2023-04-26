@@ -14,7 +14,7 @@ public class ListSubsClient {
     public static void main(String[] args) throws IOException {
 
         if (args.length != 3) {
-            System.err.println("Use: java trab1.clients.SubUserClient url user domain");
+            System.err.println("Use: java sd2223.trab1.clients.rest.ListUsersClient url user domain");
             return;
         }
 

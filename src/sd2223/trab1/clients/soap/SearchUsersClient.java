@@ -1,10 +1,11 @@
 package sd2223.trab1.clients.soap;
 
-import sd2223.trab1.api.User;
-
 import java.net.URI;
+import java.util.logging.Logger;
 
 public class SearchUsersClient {
+
+    private static Logger Log = Logger.getLogger(SearchUsersClient.class.getName());
     public static void main(String[] args) {
         if( args.length != 2) {
             System.err.println( "usage: serverUri pattern");
@@ -17,7 +18,9 @@ public class SearchUsersClient {
 
         var users = new SoapUsersClient( URI.create( serverURI ));
 
+        Log.info("Sending request to server.");
+
         var res = users.searchUsers(pattern);
-        System.out.println( res );
+        System.out.println("Result: " + res );
     }
 }

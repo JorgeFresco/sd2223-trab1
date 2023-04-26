@@ -16,7 +16,7 @@ public class PostMessageClient {
     public static void main(String[] args) throws IOException {
 
         if (args.length != 6) {
-            System.err.println("Use: java trab1.clients.PostMessageClient url user pwd id msg domain");
+            System.err.println("Use: java sd2223.trab1.clients.rest.PostMessageClient url user pwd id msg domain");
             return;
         }
 

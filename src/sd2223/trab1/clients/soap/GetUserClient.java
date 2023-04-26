@@ -19,10 +19,9 @@ public class GetUserClient {
 
         var users = new SoapUsersClient( URI.create( serverURI ));
 
-        var res = users.getUser(name,pwd);
-
         Log.info("Sending request to server.");
 
+        var res = users.getUser(name,pwd);
         System.out.println("Result: " + res );
     }
 }

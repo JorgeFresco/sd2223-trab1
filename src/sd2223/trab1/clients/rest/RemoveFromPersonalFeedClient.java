@@ -17,7 +17,7 @@ public class RemoveFromPersonalFeedClient {
     public static void main(String[] args) throws IOException {
 
         if (args.length != 5) {
-            System.err.println("Use: java trab1.clients.RemoveFromPersonalFeedClient url user pwd mid domain");
+            System.err.println("Use: java sd2223.trab1.clients.rest.RemoveFromPersonalFeedClient url user pwd mid domain");
             return;
         }
 

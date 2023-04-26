@@ -24,6 +24,6 @@ public class DeleteUserClient {
         Log.info("Sending request to server.");
 
         var res = users.deleteUser(name, pwd);
-        System.out.println( res );
+        System.out.println("Result: " + res );
     }
 }

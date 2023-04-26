@@ -23,7 +23,7 @@ public class JavaUsers implements Users {
 
 	Discovery discovery = Discovery.getInstance();
 
-	private String domain;
+	private String domain; // This server's domain
 
     public JavaUsers(String domain) {
 		this.domain = domain;
@@ -136,10 +136,21 @@ public class JavaUsers implements Users {
 	}
 
 
+	/**
+	 * Verifies if the user provided is valid
+	 * @param user user being verified
+	 * @return true if it's valid or false otherwise
+	 */
 	private boolean isUserInvalid( User user ) {
 		return user.getName() == null || user.getPwd() == null || user.getDisplayName() == null || user.getDomain() == null;
 	}
 
+	/**
+	 * Verifies if the user's information is valid
+	 * @param name name of the user
+	 * @param pwd pwd of the user
+	 * @return true if the information is valid or false otherwise
+	 */
 	private boolean isUserInvalid(String name, String pwd) {
 		return name == null || pwd == null;
 	}

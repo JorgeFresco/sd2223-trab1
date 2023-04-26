@@ -1,12 +1,13 @@
 package sd2223.trab1.clients.rest;
 
-import sd2223.trab1.clients.rest.RestUsersClient;
-
 import java.io.IOException;
 import java.net.URI;
+import java.util.logging.Logger;
 
 
 public class SearchUsersClient {
+
+	private static Logger Log = Logger.getLogger(SearchUsersClient.class.getName());
 	
 	static {
 		System.setProperty("java.net.preferIPv4Stack", "true");
@@ -23,7 +24,7 @@ public class SearchUsersClient {
 		String pattern = args[1];
 
 
-		System.out.println("Sending request to server.");
+		Log.info("Sending request to server.");
 
 		var result = new RestUsersClient(URI.create(serverUrl)).searchUsers(pattern);
 		System.out.println("Result: " + result);

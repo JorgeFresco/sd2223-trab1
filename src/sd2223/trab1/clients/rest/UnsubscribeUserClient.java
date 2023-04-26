@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 public class UnsubscribeUserClient {
 
-    private static Logger Log = Logger.getLogger(PostMessageClient.class.getName());
+    private static Logger Log = Logger.getLogger(UnsubscribeUserClient.class.getName());
 
     static {
         System.setProperty("java.net.preferIPv4Stack", "true");
@@ -15,7 +15,7 @@ public class UnsubscribeUserClient {
     public static void main(String[] args) throws IOException {
 
         if (args.length != 6) {
-            System.err.println("Use: java trab1.clients.UnsubscribeUserClient url user userDomain subUser subUserDomain pwd");
+            System.err.println("Use: java sd2223.trab1.clients.rest.UnsubscribeUserClient url user userDomain subUser subUserDomain pwd");
             return;
         }
 

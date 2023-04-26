@@ -23,9 +23,10 @@ public class JavaFeeds implements Feeds {
 
     private final Map<String, Map<Long, Message>> feeds;
     private final Map <String, List<String>> subs;
-    private long num_seq;
-    private final String domain;
-    private final long base;
+    private final String domain; // This server's domain
+
+    private long num_seq; // sequence number to generate messages' ids
+    private final long base; // base number to generate messages' ids
 
 
     private static final Logger Log = Logger.getLogger(JavaFeeds.class.getName());
@@ -304,6 +305,11 @@ public class JavaFeeds implements Feeds {
         return (num_seq++) * 256 + base;
     }
 
+    /**
+     * Gets the complete feed of a user ( his and his subscribed users messages)
+     * @param user username and domain of the user (user@domain)
+     * @return a map containing all the messages of the user's feed
+     */
     private Map<Long,Message> getFeed(String user) {
         Map<Long, Message> msgList;
 

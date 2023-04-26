@@ -11,6 +11,8 @@ import sd2223.trab1.servers.util.Discovery;
 public class SoapUsersServer {
 
 	public static final int PORT = 9090;
+
+	public static final String INET_ADDR = "0.0.0.0";
 	public static final String SERVICE = "users";
 	public static String SERVER_BASE_URI = "http://%s:%s/soap";
 
@@ -34,7 +36,7 @@ public class SoapUsersServer {
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		String serverURI = String.format(SERVER_BASE_URI, ip, PORT);
 
-		Endpoint.publish(serverURI.replace(ip, "0.0.0.0"), new SoapUsersWebService(domain));
+		Endpoint.publish(serverURI.replace(ip, INET_ADDR), new SoapUsersWebService(domain));
 
 		String serviceName = domain+":"+SERVICE;
 		Log.info(String.format("%s Soap Server ready @ %s\n", serviceName, serverURI));

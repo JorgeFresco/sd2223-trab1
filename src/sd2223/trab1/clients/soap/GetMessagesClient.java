@@ -1,8 +1,5 @@
 package sd2223.trab1.clients.soap;
 
-import sd2223.trab1.clients.rest.PostMessageClient;
-import sd2223.trab1.clients.rest.RestFeedsClient;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.logging.Logger;
@@ -28,7 +25,9 @@ public class GetMessagesClient {
 
         var feeds = new SoapFeedsClient( URI.create( serverURI ));
 
+        Log.info("Sending request to server.");
+
         var res = feeds.getMessages(user+"@"+domain,Long.parseLong(time));
-        System.out.println( res );
+        System.out.println("Result: " + res );
     }
 }

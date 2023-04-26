@@ -5,7 +5,7 @@ import java.net.URI;
 import java.util.logging.Logger;
 
 public class GetMessageClient {
-    private static Logger Log = Logger.getLogger(PostMessageClient.class.getName());
+    private static Logger Log = Logger.getLogger(GetMessageClient.class.getName());
 
     static {
         System.setProperty("java.net.preferIPv4Stack", "true");
@@ -14,7 +14,7 @@ public class GetMessageClient {
     public static void main(String[] args) throws IOException {
 
         if (args.length != 4) {
-            System.err.println("Use: java trab1.clients.GetMessageClient url user domain mid");
+            System.err.println("Use: java sd2223.trab1.clients.rest.GetMessageClient url user domain mid");
             return;
         }
 

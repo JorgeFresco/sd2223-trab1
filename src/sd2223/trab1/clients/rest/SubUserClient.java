@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 public class SubUserClient {
 
-    private static Logger Log = Logger.getLogger(PostMessageClient.class.getName());
+    private static Logger Log = Logger.getLogger(SubUserClient.class.getName());
 
     static {
         System.setProperty("java.net.preferIPv4Stack", "true");
@@ -15,7 +15,7 @@ public class SubUserClient {
     public static void main(String[] args) throws IOException {
 
         if (args.length != 6) {
-            System.err.println("Use: java trab1.clients.SubUserClient url user userDomain subUser subUserDomain pwd");
+            System.err.println("Use: java sd223.trab1.clients.rest.SubUserClient url user userDomain subUser subUserDomain pwd");
             return;
         }
 

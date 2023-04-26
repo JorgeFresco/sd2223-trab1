@@ -10,6 +10,8 @@ import java.util.logging.Logger;
 public class SoapFeedsServer {
 
     public static final int PORT = 9090;
+
+    public static final String INET_ADDR = "0.0.0.0";
     public static final String SERVICE = "feeds";
     public static String SERVER_BASE_URI = "http://%s:%s/soap";
 
@@ -34,7 +36,7 @@ public class SoapFeedsServer {
         String ip = InetAddress.getLocalHost().getHostAddress();
         String serverURI = String.format(SERVER_BASE_URI, ip, PORT);
 
-        Endpoint.publish(serverURI.replace(ip, "0.0.0.0"), new SoapFeedsWebService(domain, base));
+        Endpoint.publish(serverURI.replace(ip, INET_ADDR), new SoapFeedsWebService(domain, base));
 
         String serviceName = domain+":"+SERVICE;
         Log.info(String.format("%s Soap Server ready @ %s\n", serviceName, serverURI));

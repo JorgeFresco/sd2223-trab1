@@ -1,11 +1,12 @@
 package sd2223.trab1.clients.rest;
 
-import sd2223.trab1.clients.rest.RestUsersClient;
-
 import java.io.IOException;
 import java.net.URI;
+import java.util.logging.Logger;
 
 public class DeleteUserClient {
+
+    private static Logger Log = Logger.getLogger(DeleteUserClient.class.getName());
 
     public static void main(String[] args) throws IOException {
 
@@ -18,7 +19,7 @@ public class DeleteUserClient {
         String name = args[1];
         String pwd = args[2];
 
-        System.out.println("Sending request to server.");
+        Log.info("Sending request to server.");
 
         var result = new RestUsersClient(URI.create(serverUrl)).deleteUser(name, pwd);
         System.out.println("Result: " + result);
